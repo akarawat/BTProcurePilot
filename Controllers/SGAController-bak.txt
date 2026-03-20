@@ -1,0 +1,467 @@
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using AspnetCoreMvcFull.Models;
+
+using Microsoft.Data.SqlClient;
+using System.Data;
+using ExcelDataReader;
+using System.Runtime.CompilerServices;
+
+namespace AspnetCoreMvcFull.Controllers;
+
+public class SGAController : Controller
+{
+  public DataAccess daAccess = new DataAccess();
+  //PRDPRDExcelImport, PRDRecordSheetList
+  //public IActionResult PRDRecordSheet() => View();
+  public async Task<IActionResult> PRDRecordSheet(IEnumerable<AddRecSheetModelVM> VMModel, string? search)
+  {
+    IConfiguration _configuration = new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json")
+                        .Build();
+
+    string DBConn = _configuration[key: "ConnectionStrings:BtCostReduct"];
+    string page20 = _configuration[key: "TBCorApiServices:Page20"];
+    AddRecSheetModelVM vm = new AddRecSheetModelVM();
+
+    List<UserStockModel> result = new List<UserStockModel>();
+    try
+    {
+      using (SqlConnection conn = new SqlConnection(DBConn))
+      {
+        SqlCommand sql_cmnd = new SqlCommand("SP_GetUsersListTools", conn);
+        sql_cmnd.CommandType = CommandType.StoredProcedure;
+        sql_cmnd.Parameters.AddWithValue("@search", SqlDbType.VarChar).Value = search == null ? "" : search.ToString();
+        sql_cmnd.Parameters.Add("@rows", SqlDbType.Int);
+        sql_cmnd.Parameters["@rows"].Direction = ParameterDirection.Output;
+        conn.Open();
+        using (SqlDataReader reader = sql_cmnd.ExecuteReader())
+        {
+          while (reader.Read())
+          {
+            result.Add(new UserStockModel()
+            {
+              ID = reader["ID"].ToString(),
+              EMPCODE = reader["EMPCODE"] == DBNull.Value ? reader["USERLOGON"].ToString() : reader["EMPCODE"].ToString(),
+              USERLOGON = reader["USERLOGON"].ToString(),
+              USERFNAME = reader["USERFNAME"] == DBNull.Value ? reader["TMP_FNAME"].ToString() : reader["USERFNAME"].ToString(),
+              USRFUNC = reader["USRFUNC"].ToString(),
+              apprv_stock = reader["apprv_stock"].ToString()
+            });
+          }
+        }
+        ViewData["COUNTROW"] = String.Format("{0:N0}", sql_cmnd.Parameters["@rows"].Value) + " Rows";
+        conn.Close();
+      }
+      vm.VMCosrUses = result.ToList();
+    }
+    catch (Exception ex)
+    {
+    }
+    //----> Get WO
+    List<WORoutingModel> ressam = new List<WORoutingModel>();
+    try
+    {
+      using (SqlConnection conn = new SqlConnection(DBConn))
+      {
+        SqlCommand sql_cmnd = new SqlCommand("SP_GetWOTimeSheet", conn);
+        sql_cmnd.CommandType = CommandType.StoredProcedure;
+        sql_cmnd.Parameters.AddWithValue("@wo", SqlDbType.VarChar).Value = "";
+        conn.Open();
+        using (SqlDataReader reader = sql_cmnd.ExecuteReader())
+        {
+          while (reader.Read())
+          {
+            ressam.Add(new WORoutingModel()
+            {
+              ppWo = reader["ppWo"].ToString(),
+              itemParts = reader["itemParts"] == DBNull.Value ? "" : reader["itemParts"].ToString(),
+              itemName = reader["itemName"] == DBNull.Value ? "" : reader["itemName"].ToString(),
+              oprQtyTxt = reader["oprQtyTxt"].ToString()
+            });
+          }
+        }
+        conn.Close();
+      }
+      vm.VMWORouting = ressam.ToList();
+      }
+      catch (Exception ex)
+      {
+      }
+
+    //---> Get User information
+    if (HttpContext.Session.GetString(SessionModel.SAMNAME) != null)
+    {
+      List<string> lstADUsr = daAccess.GetADUserDetail(HttpContext.Session.GetString(SessionModel.SAMNAME));
+      ViewData["EMPCODE"] = lstADUsr[0];
+      ViewData["DISPNAME"] = lstADUsr[1];
+      ViewData["EUMAIL"] = lstADUsr[2];
+    }
+    ViewData["STRWO"] = search;
+    return View(vm);
+  }
+  public async Task<IActionResult> PRDExcelImport()
+  {
+    List<string> lstStr = daAccess.GetOpenOrCloseDoc();
+    ViewData["OPENDOC"] = lstStr[0];
+    ViewData["CLOSEDOC"] = lstStr[1];
+
+    return View();
+  }
+  
+  [HttpPost("PRDExcelImport")]
+  public async Task<IActionResult> PRDExcelImport(IFormFile file, string? dataPln, string? dataRout)
+  {
+    string sheetName = null;
+    string fType = null;
+    if (dataPln != null)
+    {
+      sheetName = dataPln;
+      fType = "PLAN";
+    }
+    else if (dataRout != null)
+    {
+      sheetName = dataRout;
+      fType = "ROUT";
+    }
+    else sheetName = null;
+    if (file == null && sheetName == null) return View();
+      string txtSheetname = file.FileName;
+      int resInsRow = 0;
+      string[] strMsg = new string[3];
+      IConfiguration _configuration = new ConfigurationBuilder()
+                          .SetBasePath(Directory.GetCurrentDirectory())
+                          .AddJsonFile("appsettings.json")
+                          .Build();
+
+      string _FileName = "";
+      string ExcelRootPath = _configuration[key: "TBCorApiServices:ExcelRootPath"];
+      try
+      {
+          _FileName = Path.GetFileName(file.FileName);
+          //string _path = Path.Combine("~/UploadedFiles", _FileName);
+          string _path = Path.Combine(ExcelRootPath, DateTime.Now.ToString("ddMMyyHHmm") + _FileName);
+          if (file.Length > 0)
+          {
+              //<---- Start to Copy 1073741824
+              using FileStream fs = new(_path, FileMode.Create);
+              await file.OpenReadStream().CopyToAsync(fs, 1048576);
+              file.OpenReadStream().Close();
+              file.OpenReadStream().Flush();
+          }
+          
+          if (_path != null && fType == "PLAN"){    
+              resInsRow = InsertPlanSawingFeed(_path, sheetName);
+          }
+          else if (_path != null && fType == "ROUT")
+          {
+              //-->resInsRow = InsertPlanSawingFeed(_path, sheetName);
+          }
+          ViewBag.Message = "Success " + resInsRow.ToString() + " Rows";
+      }
+      catch
+      {
+          ViewBag.Message = "Error";
+      }
+      //string txtUrl = HttpContext.Session.GetString(GlobUSERSession.EXELPath);
+      //HttpContext.Session.SetString(GlobUSERSession.EXELPath, "");
+      //ViewData["IMPROW"] = HttpContext.Session.GetString(GlobUSERSession.EXCROW);
+
+      List<string> lstStr = daAccess.GetOpenOrCloseDoc();
+      ViewData["OPENDOC"] = lstStr[0];
+      ViewData["CLOSEDOC"] = lstStr[1];
+      return View();
+  }
+  public int InsertPlanSawingFeed(string fExcelPath, string excelSheet)
+  {
+      if (fExcelPath == "") return 0;
+      IConfiguration _configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+      //Start to read <---
+      List<string> sheetNames = new List<string>();
+      DataTableCollection tables = ReadFromExcel(fExcelPath, ref sheetNames);
+      int rows = 0;
+      int iRtnRow = 0;
+      
+      if (tables != null)
+      {
+          //--itemdoc, itemno, operation, toollife, itemqty, UPDATE_DATE, itemname
+          foreach (DataTable dt in tables)
+          {
+              rows = dt.Rows.Count;
+              if (rows != 0)
+              {
+                  DataTable dtImp = new DataTable();
+                  dtImp.Columns.Add("itemdoc");
+                  dtImp.Columns.Add("itemno");
+                  dtImp.Columns.Add("operation");
+                  dtImp.Columns.Add("toollife");
+                  dtImp.Columns.Add("itemqty");
+                  dtImp.Columns.Add("itemname");                  
+                  int iRow = 0;
+                  string DocName = "";
+                  int Operator = 0;
+                  string[] columnNames = dt.Columns.Cast<DataColumn>()
+                                 .Select(x => x.ColumnName)
+                                 .ToArray(); 
+                  foreach (DataRow row in dt.Rows)
+                  {
+                      iRow++;
+                      if (row[0] != null)
+                      {
+                          if (iRow == 1)
+                          {
+                            DocName = row[1].ToString();  
+                          }
+                          if (iRow == 2)
+                          {
+                            Operator = row[1].ToString() == "" ? 0 : int.Parse(row[1].ToString());  
+                          }
+                          if (iRow >= 5)
+                          {
+                            DataRow dtrow = dtImp.NewRow();
+                            dtrow["itemno"] = row[0].ToString();
+                            dtrow["toollife"] = row[2].ToString();
+                            dtrow["itemqty"] = row[3].ToString();
+                            dtrow["itemdoc"] = row[4].ToString();
+                            dtrow["itemname"] = row[5].ToString();
+                            dtrow["operation"] = row[6].ToString();
+                            dtImp.Rows.Add(dtrow);
+                          }
+                      }
+                  }
+
+                  //--Insert into Data Collection โดยจะมองเห็นเป็น 1 Table ต่อ 1 Sheet
+                  
+                  try
+                  {
+                      string SqlconString = _configuration[key: "ConnectionStrings:BtCostReduct"];
+                      SqlConnection sqlCon = null;
+                      using (sqlCon = new SqlConnection(SqlconString))
+                      {
+                          sqlCon.Open();
+
+                          //SqlCommand sql_cmnd = new SqlCommand("SP_MigExcelItemno", sqlCon);
+                          //sql_cmnd.CommandType = CommandType.StoredProcedure;
+
+                          //var sqlParam = new SqlParameter();
+                          //sqlParam.ParameterName = "@TempTable";
+                          //sqlParam.SqlDbType = SqlDbType.Structured;
+                          //sqlParam.Value = dtImp; // dt;
+                          //sql_cmnd.Parameters.Add(sqlParam);
+
+                          //sql_cmnd.Parameters.Add("@IROW", SqlDbType.Int);
+                          //sql_cmnd.Parameters["@IROW"].Direction = ParameterDirection.Output;
+
+                          //sql_cmnd.ExecuteNonQuery();
+
+
+                          SqlCommand sql_cmnd = new SqlCommand("SP_MigExcelItemno", sqlCon);
+                          sql_cmnd.CommandType = CommandType.StoredProcedure;
+                          sql_cmnd.Parameters.Add("@itemdoc", SqlDbType.VarChar, 25).Value = columnNames[1];
+                          sql_cmnd.Parameters.Add("@itemname", SqlDbType.VarChar, 150).Value = DocName;
+                          sql_cmnd.Parameters.Add("@operation", SqlDbType.Int).Value = Operator;
+                          sql_cmnd.Parameters.Add("@TempTable", SqlDbType.Structured).Value = dtImp;
+                        
+                          sql_cmnd.Parameters.Add("@IROW", SqlDbType.Int);
+                          sql_cmnd.Parameters["@IROW"].Direction = ParameterDirection.Output;
+                          sql_cmnd.ExecuteNonQuery();
+                          iRtnRow += int.Parse(sql_cmnd.Parameters["@IROW"].Value == null ? "0" : sql_cmnd.Parameters["@IROW"].Value.ToString());
+            
+                          sqlCon.Close();
+                      }
+                  }
+                  catch (Exception ex)
+                  {
+
+                  }
+                  
+              }
+          }
+      return iRtnRow;
+      }
+      else
+      {
+      return iRtnRow;
+      }
+    }
+    DataTableCollection ReadFromExcel(string filePath, ref List<string> sheetNames)
+    {
+        try
+        {
+            DataTableCollection tableCollection = null;
+
+            using (var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
+            {
+                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
+                    });
+
+                    tableCollection = result.Tables;
+
+                    foreach (DataTable table in tableCollection)
+                    {
+                        sheetNames.Add(table.TableName);
+                    }
+                }
+            }
+
+            return tableCollection;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    [HttpGet]
+    public async Task<List<PartsListModel>> GetToolItemList()
+    {
+    //id, itemdoc, itemno, operation, toollife, itemqty, UPDATE_DATE, itemname
+        IConfiguration _configuration = new ConfigurationBuilder()
+                            .SetBasePath(Directory.GetCurrentDirectory())
+                            .AddJsonFile("appsettings.json")
+                            .Build();
+        string DBConn = _configuration[key: "ConnectionStrings:BtCostReduct"];
+        //List<string> ddlValues = new List<string>();
+        List<PartsListModel> res = new List<PartsListModel>();
+        try
+        {
+            using (SqlConnection conn = new SqlConnection(DBConn))
+            {
+                SqlCommand sql_cmnd = new SqlCommand("SP_GetItemPartsList", conn);
+                sql_cmnd.CommandType = CommandType.StoredProcedure;
+                //sql_cmnd.Parameters.AddWithValue("@SAMACC", SqlDbType.NVarChar).Value = "";
+                conn.Open();
+                using (SqlDataReader reader = sql_cmnd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        res.Add(new PartsListModel()
+                        {
+                          itemdoc = reader["itemdoc"].ToString(),
+                          itemno = reader["itemno"].ToString()
+                        });
+                    }
+                }
+                conn.Close();
+            }
+            return res;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+  [HttpGet]
+  public IActionResult PRDRecordSheetList()
+  {
+    List<string> lstStr = daAccess.GetOpenOrCloseDoc();
+    ViewData["OPENDOC"] = lstStr[0];
+    ViewData["CLOSEDOC"] = lstStr[1];
+    return View();
+  }
+  [HttpGet]
+  public IActionResult GetPRDRecordSheetList(string? search)
+  {
+      IConfiguration _configuration = new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json")
+                        .Build();
+
+    string DBConn = _configuration[key: "ConnectionStrings:BtCostReduct"];
+    string page20 = _configuration[key: "TBCorApiServices:Page20"];
+    List<WoListModel> result = new List<WoListModel>();
+    try
+    {
+      using (SqlConnection conn = new SqlConnection(DBConn))
+      {
+        SqlCommand sql_cmnd = new SqlCommand("SP_PRDRecordSheetList", conn);
+        sql_cmnd.CommandType = CommandType.StoredProcedure;
+        sql_cmnd.Parameters.AddWithValue("@wo", SqlDbType.VarChar).Value = search == null ? "" : search.ToString();
+        conn.Open();
+        using (SqlDataReader reader = sql_cmnd.ExecuteReader())
+        {
+          while (reader.Read())
+          {
+            result.Add(new WoListModel()
+            {
+              ppWo = reader["ppWo"].ToString(),
+              itemParts = reader["itemParts"].ToString(),
+              itemName = reader["itemName"] == DBNull.Value ? "" : reader["itemName"].ToString()
+            });
+          }
+        }
+        conn.Close();
+      }
+    }
+    catch (Exception ex)
+    {
+    }
+        
+    List<string> lstStr = daAccess.GetOpenOrCloseDoc();
+    ViewData["OPENDOC"] = lstStr[0];
+    ViewData["CLOSEDOC"] = lstStr[1];
+    return Json(result.ToList());
+  }
+  [HttpGet]
+  public async Task<List<RoutingResourceModel>> GetWOTimeSheetDet(WORoutingModel obj)
+  {
+      IConfiguration _configuration = new ConfigurationBuilder()
+                          .SetBasePath(Directory.GetCurrentDirectory())
+                          .AddJsonFile("appsettings.json")
+                          .Build();
+      string DBConn = _configuration[key: "ConnectionStrings:BtCostReduct"];
+      List<RoutingResourceModel> res = new List<RoutingResourceModel>();
+      try
+      {
+          using (SqlConnection conn = new SqlConnection(DBConn))
+          {
+              SqlCommand sql_cmnd = new SqlCommand("SP_GetWOTimeSheetDet", conn);
+              sql_cmnd.CommandType = CommandType.StoredProcedure;
+              sql_cmnd.Parameters.AddWithValue("@itempart", SqlDbType.NVarChar).Value = obj.itemParts;
+              conn.Open();
+              using (SqlDataReader reader = sql_cmnd.ExecuteReader())
+              {
+          
+    //ID	itemParts	itemName	oprQty	rouPriority	oprCode	oprCost	oprRuntime	procQty	procNext	rouGroup	itemCode	rouCode	rouResp	create_dt
+                  while (reader.Read())
+                  {
+                      res.Add(new RoutingResourceModel()
+                      {
+                        ID = reader["ID"].ToString(),
+                        itemParts = reader["itemParts"].ToString(),
+                        itemName = reader["itemName"].ToString(),
+                        oprQty = reader["oprQty"] == DBNull.Value ? 0 : (int)reader["oprQty"],
+                        rouPriority = reader["rouPriority"] == DBNull.Value ? "" : reader["rouPriority"].ToString(),
+                        oprCode = reader["oprCode"] == DBNull.Value ? "" : reader["oprCode"].ToString(),
+                        oprCost = reader["oprCost"] == DBNull.Value ? "" : reader["oprCost"].ToString(),
+                        oprRuntime = reader["oprRuntime"] == DBNull.Value ? 0 : (decimal)reader["oprRuntime"],
+                        procQty = reader["procQty"] == DBNull.Value ? 0 : (decimal)reader["procQty"],
+                        procNext =  reader["procNext"] == DBNull.Value ? 0 : (int)reader["procNext"],
+                        rouGroup = reader["rouGroup"] == DBNull.Value ? "" : reader["rouGroup"].ToString(),
+                        itemCode = reader["itemCode"] == DBNull.Value ? "" : reader["itemCode"].ToString(),
+                        rouCode = reader["rouCode"] == DBNull.Value ? "" : reader["rouCode"].ToString(),
+                        rouResp = reader["rouResp"] == DBNull.Value ? 0 : (int)reader["rouResp"],
+                        create_dt = (DateTime)reader["create_dt"]
+                      });
+                  }
+              }
+              conn.Close();
+          }
+          return res;
+      }
+      catch (Exception ex)
+      {
+          return null;
+      }
+  }
+}

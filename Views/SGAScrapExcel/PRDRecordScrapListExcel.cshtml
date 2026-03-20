@@ -1,0 +1,146 @@
+@{
+  ViewData["Title"] = "Parts Production Stock Tools";
+}
+
+@* ************** Content ************** *@
+@section PageStyles {
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+    <link href="~/css/datatables.css" rel="stylesheet" />
+    <link href="~/css/prdrecordscraplistexcel.css" rel="stylesheet" />
+    
+}
+<!-- Start Basic Bootstrap Table -->
+<div class="card">
+    
+    <div class="table-responsive text-nowrap">
+        <div class="container">
+            <div class="row card-header">
+                <div class="col-sm-2 align-self-start">
+                    <h5 class="card-header">รายงานบันทึกเวลาตามวันที่ [RECEIVED TIME SHEET RECORDS]</h5>
+                </div>
+                <div class="col-sm-10 align-self-end">
+                    <div class="d-flex justify-content-end">
+                      <div class="row">
+                            <div class="col-md-4">
+                                <input class="form-control" type="date" data-date-format="DD MMMM YYYY" id="start_dt" />
+                                <label for="start_dt">Date Start</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input class="form-control" type="date" data-date-format="DD MMMM YYYY" id="end_dt" />
+                                <label for="end_dt">Date End</label>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-info" type="button" id="btnView">SEARCH</button>
+                                <button class="btn btn-success" type="button" id="btnExport" style="display:block !important;">EXPORT</button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table id="bindDataTable" class="table table-hover" width="100%">
+            <caption>
+                Production records time sheet
+            </caption>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Sec. Lead</th>
+                    <th>Sec. Head</th>
+                    <th>Manager</th>
+
+                    <th>WO</th>
+                    <th>Item No.</th>
+                    <th>Item Name</th>
+                    <th>Operation</th>
+                    <th>Emp code</th>
+                    <th>Prd.setup</th>
+                    <th>Prd.tools</th>
+                    <th>Prd.surf</th>
+                    <th>Prd.dimout</th>
+                    <th>Prd.other</th>
+                    <th>Prd.remark</th>
+                    <th>Supp.hardness</th>
+                    <th>Supp.dimout</th>
+                    <th>Supp.surf</th>
+                    <th>Supp.other</th>
+                    <th>Supp.remark</th>
+                    <th>Other remark</th>
+
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>
+</div>
+<!-- Users Basic Bootstrap Table -->
+<hr class="my-12">
+
+@section PageScripts {
+    @* <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script> *@
+
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+
+    <script src="~/js/prdrecordscraplistexcel.js"></script>
+
+    <script src="~/js/xlsx.full.min.js"></script>
+    <script src="~/js/jszip.min.js"></script>
+
+}
+

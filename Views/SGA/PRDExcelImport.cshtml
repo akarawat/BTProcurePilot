@@ -1,0 +1,121 @@
+@{
+    ViewData["Title"] = "Parts Production stock tools ordering";
+    var dataPln = TempData["txtDataPln"];
+    var dataRout = TempData["txtDataRout"];
+}
+
+@section PageScripts {
+    <script src="~/js/ppstock.js"></script>
+}
+@section VendorStyles {
+    <link href="~/css/site.css" rel="stylesheet" />
+}
+
+@* ************** Content ************** *@
+<div class="row">
+  <div class="col-md-12">
+    
+
+    <div class="card mb-6">
+      <!-- Upload file -->
+      <div class="card-body pt-0">
+        @using (Html.BeginForm("PRDExcelImport", "SGA", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+          <div class="card-body">
+            
+              <div class="nav-align-top">
+                <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-2 gap-lg-0">
+                  <li class="nav-item"><i class="ri-file-upload-line"></i>Upload Excel Workorder & Part No
+                      <span class="success_label">
+                        @if (ViewBag.Message != null){
+                          @ViewBag.Message
+                        }
+                      </span>
+                  </li>
+                </ul>
+            </div>
+            
+            <div class="d-flex align-items-start align-items-sm-center gap-6">
+              <div class="button-wrapper">
+                <div>* (ต้องระบุ Sheet) Plan Sheet name</div>
+                <input type="text" asp-for="@dataPln" />
+                TempData.Keep("txtDataPln");
+              </div>
+            </div>
+
+            <div class="d-flex align-items-start align-items-sm-center gap-6">
+              <img src="~/img/avatars/excel_200x168.png" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" />
+              <div class="button-wrapper">
+
+                @Html.TextBox("file", "", new { type = "file", accept = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" })
+
+                <div>Allowed Excel. Max size of 1Mb</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <button type="submit" onclick="if (!confirm('ยืนยันการ Upload Excel Workorder')) return false;" class="btn btn-primary me-3" >Submit file</button>
+            <button type="reset" class="btn btn-outline-secondary">Reset</button>
+          </div>
+        }
+      </div>
+      <!-- Upload file -->
+    </div>
+
+    
+    <div class="card mb-6">
+      <!-- Upload file -->
+      <div class="card-body pt-0">
+        @using (Html.BeginForm("PRDExcelImport", "SGA", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+          <div class="card-body">
+            
+              <div class="nav-align-top">
+                <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-2 gap-lg-0">
+                  <li class="nav-item"><i class="ri-file-upload-line"></i>Upload Excel "Item Routing"
+                      <span class="success_label">
+                        @if (ViewBag.Message != null){
+                          @ViewBag.Message
+                        }
+                      </span>
+                  </li>
+                </ul>
+            </div>
+                        
+            <div class="d-flex align-items-start align-items-sm-center gap-6">
+              <div class="button-wrapper">
+                <div>* (ต้องระบุ Sheet) Routing Sheet name</div>
+                <input type="text" asp-for="@dataRout" />
+                TempData.Keep("txtDataRout");
+              </div>
+            </div>
+
+            <div class="d-flex align-items-start align-items-sm-center gap-6">
+              <img src="~/img/avatars/excel_200x168.png" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" />
+              <div class="button-wrapper">
+
+                @Html.TextBox("file", "", new { type = "file", accept = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" })
+
+                <div>Allowed Excel. Max size of 1Mb</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <button type="submit" onclick="if (!confirm('ยืนยันการ Upload Excel Item Routing file')) return false;" class="btn btn-primary me-3" >Submit file</button>
+            <button type="reset" class="btn btn-outline-secondary">Reset</button>
+          </div>
+        }
+      </div>
+      <!-- Upload file -->
+    </div>
+
+    <div class="card-body pt-0">
+      <div class="card-body pt-0">
+          <div class="card-body">
+                    
+          </div>
+      </div>
+    </div>
+</div>

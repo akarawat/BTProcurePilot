@@ -1,0 +1,398 @@
+@{
+  ViewData["Title"] = "Parts Production Stock Tools";
+}
+
+@* ************** Content ************** *@
+@section PageStyles {
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+    <link href="~/css/datatables.css" rel="stylesheet" />
+    <link href="~/css/partlist.css" rel="stylesheet" />
+    
+}
+@section PageScripts {
+@* <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script> *@
+
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+
+    <script src="~/js/partlist.js"></script>
+}
+
+<!-- Start Basic Bootstrap Table -->
+<div class="card">
+    <div class="table-responsive">
+        <div class="container">
+            <div class="row card-header">
+                <div class="col align-self-start">
+                    <h5 class="card-header">List Off all Parts in PP Warehouse</h5>
+                </div>
+                @* <div class="col align-self-center">
+                    
+                </div>
+                <div class="col align-self-end">
+                    
+                </div> *@
+                <div class="col align-self-end">
+                    <div class="d-flex justify-content-end">
+                      <button type="button" onclick="AddManualParts()" class="btn btn-success float-right">Manual Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table id="bindDataTable" class="table table-striped table-bordered dt-responsive" width="100%">
+            <thead>
+                <tr>
+                    <th style="display:none"></th>
+                    <th>Tools No.</th>
+                    <th>Tools name.</th>
+                    <th>Item No.</th>
+                    <th>Item name.</th>
+                    <th>Batch No.</th>
+                    <th>Operation</th>
+                    <th>Location & No</th>
+                    <th>แก้ไขงาน</th>
+                </tr>
+            </thead>
+            <tbody class="table_partlist">
+                <tr>
+                    <td style="display:none"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td style="display:none"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<!--/ Users Basic Bootstrap Table -->
+<hr class="my-12">
+<!-- Modal Add New Manual Parts -->
+<div class="modal fade" id="modalAddManPart" tabindex="-1" aria-labelledby="modalAddManPartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAddManPartLabel">Manual add new Item Partstool (*ผูกกับงาน)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row card-header">
+                  <div class="col align-self-start">
+                        <div class="input-group">
+                            <span class="input-group-text text-danger">Tools No. & Tools name</span>
+                            <input id="mas_itemno" type="text" aria-label="Tools No." class="form-control text-danger" placeholder="Tools No">
+                            <input id="mas_itemnoname" type="text" aria-label="Tools name" class="form-control text-danger" placeholder="Tools name">
+                        </div>
+                  </div>
+              </div>
+
+              <div class="container">
+                    <div class="row align-items-start">
+                        <!-- #Col 1 -->
+                        <div class="col-6 align-items-start">
+                            <h5 class="card-header">Stock Information</h5>
+                            <table class="table grid">
+                                <tr>
+                                    <td colspan="3">
+                                        <label for="searchname" class="form-label">Search Name</label>
+                                        <input id="searchname" class="form-control form-control-sm" type="text" placeholder="searchname" value="" />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="dimension1" />
+                                        <label for="dimension1">Dimension 1</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="dimension2" />
+                                        <label for="dimension2">Dimension 2</label>
+                                    </td>
+                                    <td> </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <label for="warehouse" class="form-label">Warehouse</label>
+                                        <input id="warehouse" class="form-control form-control-sm" type="text" placeholder="PP WH" value="PP WH" readonly />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <label for="batchno" class="form-label">Batchno</label>
+                                        <input id="batchno" class="form-control form-control-sm" type="text" placeholder="" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="onlocat" class="form-label text-danger">On-location</label>
+                                        <input id="onlocat" class="form-control form-control-sm" type="text" placeholder="" value="Cut-tool" readonly />
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="fincostamont" />
+                                        <label for="fincostamont">Finance cost.</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="phyinventory" />
+                                        <label for="phyinventory">Phy. Invent</label>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="phyreserv" />
+                                        <label for="phyreserv">Phy. Reserv.</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm text-danger" type="number" placeholder="1" id="avaiphy" />
+                                        <label for="avaiphy" class="text-danger">* Phy. Aval</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="ordertotal" />
+                                        <label for="ordertotal">Order total</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="onorder" />
+                                        <label for="onorder">On order.</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="orderreserv" />
+                                        <label for="orderreserv">On Ord.Reserv</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="totalavailable" />
+                                        <label for="totalavailable">Total Aval</label>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </div>
+                        <!-- #Col 2 -->
+                        <div class="col-2 align-items-start">
+                            <h5 class="card-header">Box Location</h5>
+                                <table class="table grid">
+                                  <tr>
+                                      <td colspan="3">
+                                          <input class="form-control form-control-sm" type="number" placeholder="0" id="box_locno" />
+                                          <label for="box_locno">No</label>
+                                      </td>
+                                  </tr>
+                                  <tr>
+                                      <td colspan="3">
+                                          <label for="box_itemlocate" class="form-label">Location</label>
+                                          <input id="box_itemlocate" class="form-control form-control-sm" type="text" placeholder="" />
+                                      </td>
+                                  </tr>
+                                </table>
+                        </div>
+                        <!-- #Col 3 -->
+                        <div class="col-4 align-items-start">
+                            <h5 class="card-header">Parts with Item Number (ผูกกับงาน).</h5>
+                                <table class="table grid">
+                                  <tr>
+                                      <td colspan="2">
+                                        <input id="par_itemdoc" type="text" aria-label="Item Number." class="form-control text-info" placeholder="Item Number">
+                                        <input id="par_itemname" type="text" aria-label="Item Name" class="form-control text-info" placeholder="Item Name">
+                                      </td>
+                                  </tr>
+                                  <tr>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="par_operation" />
+                                        <label for="par_operation">Operatoin</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="par_toollife" />
+                                        <label for="par_toollife">Tools life</label>
+                                    </td>
+                                  </tr>
+                                </table>
+                        </div>
+
+                  </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:ResetForm();" class="btn btn-sm btn-warning" data-bs-dismiss="modal">CANCEL</a>
+                <a href="javascript:SaveNewParts(0);" class="btn btn-sm btn-info">SAVE</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Manual Parts -->
+<div class="modal fade" id="modalEditManPart" tabindex="-1" aria-labelledby="modalEditManPartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditManPartLabel">Edit Manual Item Partstool (แก้ไขงาน)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row card-header">
+                    <div class="col align-self-start">
+                        <div class="input-group">
+                            <span class="input-group-text text-danger">Tools No. & Tools name</span>
+                            <input type="hidden" id="e_id" />
+                            <input id="e_mas_itemno" type="text" aria-label="Tools No." class="form-control text-danger" placeholder="Tools No" readonly>
+                            <input id="e_mas_itemnoname" type="text" aria-label="Tools name" class="form-control text-danger" placeholder="Tools name" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="row align-items-start">
+                        <!-- #Col 1 -->
+                        <div class="col-6 align-items-start">
+                            <h5 class="card-header">Stock Information</h5>
+                            <table class="table grid">
+                                <tr>
+                                    <td colspan="3">
+                                        <label for="e_searchname" class="form-label">Search Name</label>
+                                        <input id="e_searchname" class="form-control form-control-sm" type="text" placeholder="searchname" value="" readonly />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_dimension1" readonly />
+                                        <label for="e_dimension1">Dimension 1</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_dimension2" readonly />
+                                        <label for="e_dimension2">Dimension 2</label>
+                                    </td>
+                                    <td> </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <label for="e_warehouse" class="form-label">Warehouse</label>
+                                        <input id="e_warehouse" class="form-control form-control-sm" type="text" placeholder="PP WH" value="PP WH" readonly />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <label for="e_batchno" class="form-label">Batchno</label>
+                                        <input id="e_batchno" class="form-control form-control-sm" type="text" placeholder="" readonly />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="e_onlocat" class="form-label text-danger">On-location</label>
+                                        <input id="e_onlocat" class="form-control form-control-sm" type="text" placeholder="" value="Cut-tool" readonly />
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_fincostamont" readonly />
+                                        <label for="e_fincostamont">Finance cost.</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_phyinventory" readonly />
+                                        <label for="e_phyinventory">Phy. Invent</label>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_phyreserv" readonly />
+                                        <label for="e_phyreserv">Phy. Reserv.</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm text-danger" type="number" placeholder="1" id="e_avaiphy" readonly />
+                                        <label for="e_avaiphy" class="text-danger">* Phy. Aval</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_ordertotal" readonly />
+                                        <label for="e_ordertotal">Order total</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_onorder" readonly />
+                                        <label for="e_onorder">On order.</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_orderreserv" readonly />
+                                        <label for="e_orderreserv">On Ord.Reserv</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_totalavailable" readonly />
+                                        <label for="e_totalavailable">Total Aval</label>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </div>
+                        <!-- #Col 2 -->
+                        <div class="col-2 align-items-start">
+                            <h5 class="card-header text-success">Box Location</h5>
+                            <table class="table grid">
+                                <tr>
+                                    <td colspan="3">
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_box_locno" />
+                                        <label for="e_box_locno">No</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <label for="e_box_itemlocate" class="form-label">Location</label>
+                                        <input id="e_box_itemlocate" class="form-control form-control-sm" type="text" placeholder="" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- #Col 3 -->
+                        <div class="col-4 align-items-start">
+                            <h5 class="card-header text-success">Parts with Item No (ผูกกับงาน).</h5>
+                            <table class="table grid">
+                                <tr>
+                                    <td colspan="2">
+                                        <input id="e_par_itemdoc" type="text" aria-label="Item Number" class="form-control text-info" placeholder="Item Number">
+                                        <input id="e_par_itemname" type="text" aria-label="Item name" class="form-control text-info" placeholder="Item name">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_par_operation" />
+                                        <label for="e_par_operation">Operatoin</label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" placeholder="0" id="e_par_toollife" />
+                                        <label for="e_par_toollife">Tools life</label>
+                                    </td>
+                                </tr>
+                            </table>
+                            <h6 id="lblDocRemarkEdit" class="text-info"> * แก้ไขเฉพาะมีรายการอยู่แล้ว <br/>
+                              และจะต้องมีใน PP Stock เท่านั้นถึงจะเบิกได้ </h6>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:ResetEditForm();" class="btn btn-sm btn-warning" data-bs-dismiss="modal">CANCEL</a>
+                <a href="javascript:SaveEditParts();" class="btn btn-sm btn-info">SAVE</a>
+            </div>
+        </div>
+    </div>
+</div>
+

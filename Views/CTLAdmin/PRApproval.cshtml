@@ -1,0 +1,778 @@
+@{
+    var isFullscreen = ViewData["isFullscreen"]?.ToString() == "true";
+    var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
+    var menuFixed = isFullscreen ? "" : "menu-fixed";
+    var isNavbar = isFullscreen ? false : true;
+    var isMenu = isFullscreen ? false : true;
+    var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
+    //ViewData["navbarHideToggle"] = true;
+    // *** No Menus ***
+    ViewData["isMenu"] = isMenu;
+    ViewData["menuFixed"] = menuFixed;
+    // *** No Navbar ***
+    ViewData["isNavbar"] = isNavbar;
+    ViewData["navbarType"] = navbarType;
+}
+@{
+    // List<ProcureUserModel> modelProcure = Model.VMProcureUserModel ?? new List<ProcureUserModel>();
+    // modelProcure = Model.VMProcureUserModel;
+
+    // List<VenModel> modelVen = Model.VMVenModel ?? new List<VenModel>();
+    // modelVen = Model.VMVenModel;
+
+    // List<ProjModel> modelProj = Model.VMProjModel ?? new List<ProjModel>();
+    // modelProj = Model.VMProjModel;
+
+    // List<AccModel> modelAcc = Model.VMAccModel ?? new List<AccModel>();
+    // modelAcc = Model.VMAccModel;
+
+    // List<CurrencyModel> modelCurrency = Model.VMCurrencyModel ?? new List<CurrencyModel>();
+    // modelCurrency = Model.VMCurrencyModel;
+
+    ViewData["Title"] = "Approval Purchase Request";
+
+    string sDOC_NUMBER = ViewData["DOC_NUMBER"]?.ToString() ?? string.Empty;
+    string sEMPCODE = Context.Session.GetString(SessionModel.EMPCODE) ?? string.Empty;
+    string sDEPCODE = Context.Session.GetString(SessionModel.DEPCODE) ?? string.Empty;
+    string sUEMAIL = Context.Session.GetString(SessionModel.UEMAIL) ?? string.Empty;
+    string sUROLEADMIN = Context.Session.GetString(SessionModel.UROLEADMIN) ?? string.Empty;
+    string sMAILGROUPADMIN = Context.Session.GetString(SessionModel.MAILGROUPADMIN) ?? string.Empty;
+}
+
+@* ************** Content ************** *@
+@section PageStyles {
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+    <link href="~/css/datatables.css" rel="stylesheet" />
+    <link href="~/css/prnewrequest.css" rel="stylesheet" />
+}
+@section VendorScripts {
+    <script src="~/js/moment.min.js"></script>
+    
+}
+<form method="post">
+    <div class="row">
+        <!-- Approx require -->
+        <div class="col-md-8 mb-3">
+          <h4 class="mb-3 text-center text-bg-info">Purchase Request (Approval Form)</h4>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="form-check">
+                <input type="text" class="form-control form-control-sm border-danger" name="prno_preix" id="prno_preix" placeholder="PR Number (Auto running No.)" disabled>
+                <input type="hidden" name="prno" id="prno"/>
+                <input type="hidden" name="prno_draft" id="prno_draft" value="@sDOC_NUMBER" />
+                <input type="hidden" name="empCode" id="empCode" value="@sEMPCODE" />
+                <input type="hidden" name="reqDepCode" id="reqDepCode" value="@sDEPCODE" />
+                <input type="hidden" name="LoginEmpEmail" id="LoginEmpEmail" value="@sUEMAIL" />
+                <input type="hidden" name="sUROLEADMIN" id="sUROLEADMIN" value="@sUROLEADMIN" />
+                <input type="hidden" name="sMAILGROUPADMIN" id="sMAILGROUPADMIN" value="@sMAILGROUPADMIN" />
+                @* <input type="hidden" name="empCode" id="empCode" value="@sEMPCODE" />
+                <input type="text" name="sMAILGROUPADMIN" id="sMAILGROUPADMIN" value="@sMAILGROUPADMIN" /> *@
+                <input type="hidden" name="urlApprove" id="urlApprove" value="@ViewData["URLApproval"]" />
+                <input type="hidden" name="urlResult" id="urlResult" value="@ViewData["URLResult"]" />
+            </div>
+            <div class="form-check">
+                <label for="id_projno" class="form-label">Project Number</label> <label id="id_projno_lbl" class="form-label textBold"></label>
+                <input class="form-control custom-number-btinfo" list="opt_projno" id="id_projno" name="id_projno" placeholder="Project Number" disabled>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Approx require -->
+        <div class="col-md-4 mb-3">
+          Status: <label class="form-label text-info" id="lblReqStatus">-</label> <br/>
+          Last Update: <label class="form-label text-info" id="lblLastupdate">-</label>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="rdoApprox" id="rdoApprox" value="3" disabled>
+                <label class="form-check-label" for="rdoApprox">Urgent-PO issue after receive PR 3 working days</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="rdoApprox" id="rdoApprox2" value="1" disabled>
+                <label class="form-check-label" for="rdoApprox2">Normal-PO issue after receive PR 10 working days</label>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="form-check">
+                <label class="form-check-label" for="approx_dt">Require delivery date</label>
+                <input type="date" class="form-control form-control-sm" name="approx_dt" id="approx_dt" disabled>
+            </div>
+            <div class="form-check">
+                <input type="text" class="form-control form-control-sm" name="InvNo" id="InvNo"
+                       placeholder="Investment request / Credit request No." disabled>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Purpose -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label fw-bold">Purpose:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="rdoPurpose" id="rdoPurpose1" value="1" checked="checked" onclick="javascript:SupPurpose(1)" disabled>
+                <label class="form-check-label" for="rdoPurpose1">Order external 365 system</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="rdoPurpose" id="rdoPurpose2" value="2" onclick="javascript:SupPurpose(2)" disabled>
+                <label class="form-check-label" for="rdoPurpose2">Order in the 365 system</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="rdoPurpose" id="rdoPurpose3" value="3" onclick="javascript:SupPurpose(3)" disabled>
+                <label class="form-check-label" for="rdoPurpose3">Request quotation only</label>
+            </div>
+        </div>
+
+        <!-- Reference -->
+        <div class="col-md-4 mb-3">
+          <div class="row">
+              <div class="mb-3">
+                <label class="form-label fw-bold">Reference:</label>
+                    <input type="text" class="form-control" name="reference" id="reference" placeholder="Change No. / NCR No. / WO No. / Work Permit No." disabled>
+              </div>
+                <!-- Reason to order -->
+              <div class="mb-3">
+                  <label class="form-label fw-bold">Reason to order:</label>
+                    <textarea class="form-control" name="reason" id="reason" rows="2" disabled></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Area for purchaser -->
+        <div class="col-md-4 mb-3">
+            <div class="border p-2 border-warning text-warning">
+                <strong>Area for purchaser use only</strong>
+                <div class="mb-2">
+                    <label class="form-label small">PR Received date</label>
+                    <input type="date" class="form-control form-control-sm" name="prReceivedDate" id="prReceivedDate" disabled="disabled">
+                </div>
+                <div>
+                    <label class="form-label small">PO Number</label>
+                    <input type="text" class="form-control form-control-sm" name="poNumber" id="poNumber" disabled="disabled">
+                </div>
+                
+                  <div>
+                      <input class="form-check-input" type="radio" name="rdoProcApp" id="rdoProcApp1" value="1" disabled>
+                      <label class="form-check-label text-success" for="rdoProcApp1">Recieve PR.</label>
+                      <br />
+                      <input class="form-check-input" type="radio" name="rdoProcApp" id="rdoProcApp9" value="9" disabled>
+                      <label class="form-check-label text-warning" for="rdoProcApp9">Reject PR. All approval</label>
+                      <br />
+                      <input class="form-check-input" type="radio" name="rdoProcApp" id="rdoProcApp7" value="7" disabled>
+                      <label class="form-check-label text-warning" for="rdoProcApp7">Reject PR. To Requester</label>
+                  </div>
+                  <div>
+                      <label class="form-label small">Procurement Remark</label>
+                      <input type="text" class="form-control form-control-sm" name="procRemark" id="procRemark" disabled="disabled">
+                  </div>
+                <div>
+                    <input class="form-check-input" type="radio" name="rdoQuoRtn" id="rdoQuoRtn0" value="0" disabled>
+                    <label class="form-check-label" for="rdoQuoRtn0">Procure no quotation</label>
+                    <br />
+                    <input class="form-check-input" type="radio" name="rdoQuoRtn" id="rdoQuoRtn1" value="1" disabled>
+                    <label class="form-check-label" for="rdoQuoRtn1">Procure send quotation</label>
+
+                </div>
+                <div id="divProcControl" style="display:none">
+                    <br />
+                    <span class="text-start"><label class="btn btn-secondary" id="btnSndQuotation" disabled>Send Quotation</label></span> 
+                    <span class="text-end"><label class="btn btn-success" id="btnProcApprove" disabled>PROC. SAVE</label></span>
+                  </div>
+            </div>
+        </div>
+    </div>
+    <!-- Start Suggest Supplier 1 -->
+    <div class="card bg-body">
+        <div class="card-body">
+            <div class="row" id="card-supp1" style="display:none">
+                <h5 class="card-header">Suggested Supplier 1</h5>
+              <div class="row mb-3">
+                  <div class="col-md-3 border-warning">
+                        <input class="form-control custom-number-btinfo" list="opt_supp1" id="id_supp1" name="id_supp1" placeholder="Select Supplier" disabled>
+                  </div>
+
+                  <div class="col-md-5">
+                      <input type="hidden" id="sucgid1" />
+                      <input type="hidden" id="CURRCY" />
+                        <input type="text" class="form-control bg-transparent" name="name_supp1" id="name_supp1" placeholder="Supplier name (Option)" disabled>
+                  </div>
+                  <div class="col-md-1"></div>
+                  <div class="col-md-3">
+                    
+                  </div>
+              </div>
+              <div class="row mb-3 bg-transparent">
+                  <div class="col-md-3">
+                        <input type="text" class="form-control bg-transparent" name="vc_supp1" id="vc_supp1" placeholder="V/C" disabled style="display:none">
+                        <input type="text" class="form-control" name="contact_supp1" id="contact_supp1" placeholder="Contact" disabled>
+                  </div>
+                    <div class="col-md-5">
+                        <input type="email" class="form-control" name="email_supp1" id="email_supp1" placeholder="E-Mail" disabled>
+                  </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="tel_supp1" id="tel_supp1" placeholder="Tel/Fax." disabled>
+                  </div>
+              </div>
+              <div class="row mb-3">
+                  <div class="col-md-12">
+                        <input type="text" class="form-control" name="remark_supp1" id="remark_supp1" placeholder="Remark." disabled>
+                        <input type="text" class="form-control" name="quoref_supp1" id="quoref_supp1" placeholder="Ref Quotation No." disabled style="display:none">
+                        <div class="form-floating form-floating-outline mb-6" style="display:none">
+                            <input class="form-control" type="date" id="refnodt_supp1" disabled />
+                            <label for="refnodt_supp1">Ref. Date</label>
+                        </div>
+                  </div>
+                 @*  <div class="col-md-3">
+                  </div>
+
+                  <div class="col-md-3">
+                  </div> *@
+              </div>
+          </div>
+
+            <div class="row" id="card-supp2" style="display:none">
+                <h5 class="card-header">Suggested Supplier 2</h5>
+              <div class="row mb-3 bg-transparent">
+                  <div class="col-md-3 border-warning">
+                        <input class="form-control custom-number-btinfo" list="opt_supp2" id="id_supp2" name="id_supp2" placeholder="Select Supplier" disabled>
+                  </div>
+
+                  <div class="col-md-5">
+                      <input type="hidden" id="sucgid2" />
+                        <input type="text" class="form-control bg-transparent" name="name_supp2" id="name_supp2" placeholder="Supplier name (Option)" disabled>
+                  </div>
+                  <div class="col-md-1"></div>
+                  <div class="col-md-3">
+                  </div>
+              </div>
+              <div class="row mb-3 bg-transparent">
+                  <div class="col-md-3">
+                        <input type="text" class="form-control bg-transparent" name="vc_supp2" id="vc_supp2" placeholder="V/C" disabled style="display:none">
+                        <input type="text" class="form-control" name="contact_supp2" id="contact_supp2" placeholder="Contact" disabled>
+                  </div>
+                    <div class="col-md-5">
+                        <input type="email" class="form-control" name="email_supp2" id="email_supp2" placeholder="E-Mail" disabled>
+                  </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="tel_supp2" id="tel_supp2" placeholder="Tel/Fax." disabled>
+                  </div>
+              </div>
+              <div class="row mb-3">
+                  <div class="col-md-12">
+                        <input type="text" class="form-control" name="remark_supp2" id="remark_supp2" placeholder="Remark." disabled>
+                        <input type="text" class="form-control" name="quoref_supp2" id="quoref_supp2" placeholder="Ref Quotation No." disabled style="display:none">
+                        <div class="form-floating form-floating-outline mb-6" style="display:none">
+                            <input class="form-control" type="date" id="refnodt_supp2" disabled />
+                            <label for="refnodt_supp2">Ref. Date</label>
+                        </div>
+                  </div>
+                  @*<div class="col-md-3">
+                  </div>
+
+                  <div class="col-md-3">
+                  </div>*@
+              </div>
+          </div>
+            @* Start Supp3 *@
+            <div class="row" id="card-supp3" style="display:none">
+                <h5 class="card-header">Suggested Supplier 3</h5>
+              <div class="row mb-3 bg-transparent">
+                  <div class="col-md-3 border-warning">
+                        <input class="form-control custom-number-btinfo" list="opt_supp3" id="id_supp3" name="id_supp3" placeholder="Select Supplier" disabled>
+                  </div>
+
+                  <div class="col-md-5">
+                      <input type="hidden" id="sucgid3" />
+                        <input type="text" class="form-control bg-transparent" name="name_supp3" id="name_supp3" placeholder="Supplier name (Option)" disabled>
+                  </div>
+                  <div class="col-md-1"></div>
+                  <div class="col-md-3">
+                  </div>
+              </div>
+              <div class="row mb-3 bg-transparent">
+                  <div class="col-md-3">
+                        <input type="text" class="form-control bg-transparent" name="vc_supp3" id="vc_supp3" placeholder="V/C" disabled style="display:none">
+                        <input type="text" class="form-control" name="contact_supp3" id="contact_supp3" placeholder="Contact" disabled>
+                  </div>
+                    <div class="col-md-5">
+                        <input type="email" class="form-control" name="email_supp3" id="email_supp3" placeholder="E-Mail" disabled>
+                  </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="tel_supp3" id="tel_supp3" placeholder="Tel/Fax." disabled>
+                  </div>
+              </div>
+              <div class="row mb-3">
+                  <div class="col-md-12">
+                        <input type="text" class="form-control" name="remark_supp3" id="remark_supp3" placeholder="Remark." disabled>
+                        <input type="text" class="form-control" name="quoref_supp3" id="quoref_supp3" placeholder="Ref Quotation No." disabled style="display:none">
+                        <div class="form-floating form-floating-outline mb-6" style="display:none">
+                            <input class="form-control" type="date" id="refnodt_supp3" disabled />
+                            <label for="refnodt_supp3">Ref. Date</label>
+                        </div>
+                  </div>
+                  @* <div class="col-md-3">
+                  </div>
+
+                  <div class="col-md-3">
+                  </div> *@
+              </div>
+          </div>
+          @* /End Supp3 *@
+            @* Start supp4 *@
+            <div class="row" id="card-supp4" style="display:none">
+                <h5 class="card-header">Suggested Supplier 4</h5>
+                <div class="row mb-3 bg-transparent">
+                    <div class="col-md-3 border-warning">
+                        <input class="form-control custom-number-btinfo" list="opt_supp4" id="id_supp4" name="id_supp4" placeholder="Select Supplier" disabled>
+                    </div>
+
+                    <div class="col-md-5">
+                        <input type="hidden" id="sucgid3" />
+                        <input type="text" class="form-control bg-transparent" name="name_supp4" id="name_supp4" placeholder="Supplier name (Option)" disabled>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-3">
+                    </div>
+                </div>
+                <div class="row mb-3 bg-transparent">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control bg-transparent" name="vc_supp4" id="vc_supp4" placeholder="V/C" disabled style="display:none">
+                        <input type="text" class="form-control" name="contact_supp4" id="contact_supp4" placeholder="Contact" disabled>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="email" class="form-control" name="email_supp4" id="email_supp4" placeholder="E-Mail" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="tel_supp4" id="tel_supp4" placeholder="Tel/Fax." disabled>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <input type="text" class="form-control" name="remark_supp4" id="remark_supp4" placeholder="Remark." disabled>
+                        <input type="text" class="form-control" name="quoref_supp4" id="quoref_supp4" placeholder="Ref Quotation No." disabled style="display:none">
+                        <div class="form-floating form-floating-outline mb-6" style="display:none">
+                            <input class="form-control" type="date" id="refnodt_supp4" disabled />
+                            <label for="refnodt_supp4">Ref. Date</label>
+                        </div>
+                    </div>
+                    @* <div class="col-md-3">
+                    </div>
+
+                    <div class="col-md-3">
+                    </div> *@
+                </div>
+            </div>
+            @* /End supp4 *@
+              @* Start supp5 *@
+            <div class="row" id="card-supp5" style="display:none">
+                <h5 class="card-header">Suggested Supplier 5</h5>
+                <div class="row mb-3 bg-transparent">
+                    <div class="col-md-3 border-warning">
+                        <input class="form-control custom-number-btinfo" list="opt_supp5" id="id_supp5" name="id_supp5" placeholder="Select Supplier" disabled>
+                    </div>
+
+                    <div class="col-md-5">
+                        <input type="hidden" id="sucgid3" />
+                        <input type="text" class="form-control bg-transparent" name="name_supp5" id="name_supp5" placeholder="Supplier name (Option)" disabled>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-3">
+                    </div>
+                </div>
+                <div class="row mb-3 bg-transparent">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control bg-transparent" name="vc_supp5" id="vc_supp5" placeholder="V/C" disabled style="display:none">
+                        <input type="text" class="form-control" name="contact_supp5" id="contact_supp5" placeholder="Contact" disabled>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="email" class="form-control" name="email_supp5" id="email_supp5" placeholder="E-Mail" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="tel_supp5" id="tel_supp5" placeholder="Tel/Fax." disabled>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <input type="text" class="form-control" name="remark_supp5" id="remark_supp5" placeholder="Remark." disabled>
+                        <input type="text" class="form-control" name="quoref_supp5" id="quoref_supp5" placeholder="Ref Quotation No." disabled style="display:none">
+                        <div class="form-floating form-floating-outline mb-6" style="display:none">
+                            <input class="form-control" type="date" id="refnodt_supp5" disabled />
+                            <label for="refnodt_supp5">Ref. Date</label>
+                        </div>
+                    </div>
+                    @* <div class="col-md-3">
+                    </div>
+
+                    <div class="col-md-3">
+                    </div> *@
+                </div>
+            </div>
+            @* /End supp5 *@
+        </div>
+    </div>
+    <!-- /End Suggest Supplier  -->
+
+    <br />
+    <!-- Add PR Detail -->
+    <div class="card" id="card-detail">
+      <h5 class="card-header text-end">Items Detail</h5>
+      <div class="card-body">
+          <div class="row border border-success p-2 text-success bg-body">
+              <div class="col-md-2 p-2">
+                  <strong>Request Items</strong>
+              </div>
+              <!-- Detail -->
+              <div class="col-md-12 mb-3">
+                  <table class="table table-hover tableListPrdetail" id="bindDataTable">
+                      <thead>
+                          <tr class="tableListPrdetail">
+                              <th class="tableListPrdetail">BT No</th>
+                              <th>Description/Spec</th>
+                              <th>Brand/Model</th>
+                              <th>Acc Code</th>
+                              <th>Cost Dept</th>
+                              <th>Quantity</th>
+                              <th>Unit</th>
+                              <th>Unit Price</th>
+                              <th>Discount</th>
+                              <th>Total amount</th>
+                          </tr>
+                      </thead>
+                      <tbody class="table-border-bottom-0">
+                          <tr>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                          </tr>
+                      </tbody>
+                      <tfoot class="table-border-bottom-0">
+                          <tr>
+
+                              <td colspan="2"></td>
+                              <td>Currency</td>
+                              <td colspan="2">
+                                    <span id="prcurrency" class="textBold"></span>
+                                </td>
+                              <td align="right" colspan="3">
+                                    Discount &nbsp;&nbsp;&nbsp; <span id="spnDisc" class="textBold"></span>
+                              </td>
+                              <td>Total</td>
+                                <td align="right"><span id="spnTotal" class="textBold"></span></td>
+                            </tr>
+                      </tfoot>
+                  </table>
+              </div>
+          </div>
+      </div>
+    </div>
+    <!-- /Detail PR list -->
+    <br />
+
+    <!-- Attached file -->
+    <div class="row border border-info p-2 text-info">
+        <div class="col-md-4 p-2">
+            <strong>Attached file</strong>
+        </div>
+        <div class="column-gap-md-12 mb-3">
+            <div id="adminUpload" style="display:none">
+              <form id="frmUpload" enctype="multipart/form-data">
+                  <input type="hidden" id="ref_prid" name="ref_prid">
+                  <div class="row g-2">
+                      <div class="col-md-4">
+                          <select id="filetype" name="filetype" class="form-select form-select-sm">
+                              <option value="6">Procurement. File</option>
+                          </select>
+                      </div>
+                      <div class="col-md-6">
+                          <input type="file" id="file" name="file" class="form-control form-control-sm" onchange="forceUpload()" />
+                          <div class="form-text">Max 2 MB</div>
+                      </div>
+                      <div class="col-md-2">
+                          <button type="button" id="btnUpload" class="btn btn-primary btn-sm w-100">Upload</button>
+                      </div>
+                  </div>
+              </form>
+              <div id="uploadResult" class="mt-2 small"></div>
+            </div>
+            <!-- ตารางแสดงไฟล์แนบ (ถ้าต้องการ) -->
+            <table class="table table-sm mt-3" id="tblFiles">
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Type</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            
+        </div>
+    </div>
+
+    <br />
+    <!--Start Approval ... -->
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <div class="card" id="card-requester">
+                <h5 class="card-header">Requester</h5>
+                <div class="card-body">
+                    <input type="hidden" id="lblReqMail" name="lblReqMail" />
+                    <input type="hidden" id="approvalStatus" />
+                    <input type="hidden" id="approve_step" />
+                    Requester : <label class="form-label text-info" id="lblRequester">-</label><br />
+                    Require date: <label class="form-label text-info" id="lblReqDate">-</label><br />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card" id="card-approval">
+                <h5 class="card-header">Approval  <br /> (S2-S3 or P2-P4)</h5>
+                <input type="hidden" id="appFlag" />
+                <input type="hidden" id="appFlag2" />
+                <input type="hidden" id="person" name="person" />
+                <input type="hidden" id="personStatus" name="personStatus" />
+                <div class="card-body">
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <input type="hidden" id="lblAppEmpMail" name="lblAppEmpMail" />
+                      <label id="lblAppEmpDisp" name="lblAppEmpDisp"></label>
+                      <div class="form-check">
+                          <input class="form-check-input" type="radio" name="rdoAppEmp" id="rdo1AppEmp" onclick="setPrStatus2App(1, 1, 1)" value="1" >
+                          <label class="form-check-label" for="rdo1AppEmp">Approve</label>
+                      </div>
+                      <div class="form-check">
+                          <input class="form-check-input" type="radio" name="rdoAppEmp" id="rdo9AppEmp" onclick="setPrStatusReject(1, 9, 1)" value="9" >
+                          <label class="form-check-label" for="rdo9AppEmp">Reject</label>
+                      </div>
+                      <label class="form-label" id="lblRemarkEmp" name="lblRemarkEmp"></label>
+                      <label class="form-label" id="lblAppEmpDate" name="lblAppEmpDate"></label>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <hr />
+                    </div>
+                  </div>
+                  <!-- Approval 2 -->
+                  <div class="row">
+                    <div class="col-md-12">
+                      <input type="hidden" id="lblAppEmp2Mail" name="lblAppEmp2Mail" />
+                      <label class="form-label text-secondary" id="lblTxtEmp2">Approval 2 (Option)</label>
+                      <label id="lblAppEmp2Disp" name="lblAppEmp2Disp"></label>
+                      <div class="form-check">
+                          <input class="form-check-input" type="radio" name="rdoAppEmp2" id="rdo1AppEmp2" onclick="setPrStatus2App(1, 1, 2)" value="1" >
+                          <label class="form-check-label" for="rdo1AppEmp2">Approve</label>
+                      </div>
+                      <div class="form-check">
+                                <input class="form-check-input" type="radio" name="rdoAppEmp2" id="rdo9AppEmp2" onclick="setPrStatusReject(1, 9, 2)" value="9">
+                                <label class="form-check-label" for="rdo9AppEmp2">Reject</label>
+                      </div>
+                      <label class="form-label" id="lblRemarkEmp2" name="lblRemarkEmp2"></label>
+                      <label class="form-label" id="lblAppEmp2Date" name="lblAppEmp2Date"></label>
+                    </div>
+                  </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card" id="card-countersign">
+                <h5 class="card-header">Countersigned (MGR.)</h5>
+                <input type="hidden" id="countFlag" />
+                <div class="card-body">
+                    <input type="hidden" id="lblCountEmpMail" name="lblCountEmpMail" />
+                    <label id="lblCountEmpDisp" name="lblCountEmpDisp"></label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rdoCountEmp" id="rdo1CountEmp" onclick="setPrStatus(2, 1)" value="1" >
+                        <label class="form-check-label" for="rdo1CountEmp">Approve</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rdoCountEmp" id="rdo9CountEmp" onclick="setPrStatus(2, 9)" value="9" >
+                        <label class="form-check-label" for="rdo9CountEmp">Reject</label>
+                    </div>
+
+                    <label class="form-label" id="lblRemarkCount" name="lblRemarkCount"></label>
+                    <label class="form-label" id="lblCountEmpDate" name="lblCountEmpDate"></label>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card" id="card-author">
+                <h5 class="card-header">Authorized (M.D.)</h5>
+                <input type="hidden" id="authFlag" />
+                <div class="card-body">
+                    <input type="hidden" id="lblAuthEmpMail" name="lblAuthEmpMail" />
+                    <label id="lblAuthEmpDisp" name="lblAuthEmpDisp"></label>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rdoAuthEmp" id="rdo1AuthEmp" onclick="setPrStatus(3, 1)" value="9" >
+                        <label class="form-check-label" for="rdo1AuthEmp">Approve</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rdoAuthEmp" id="rdo9AuthEmp" onclick="setPrStatus(3, 9)" value="9" >
+                        <label class="form-check-label" for="rdo9AuthEmp">Reject</label>
+                    </div>
+
+                    <label class="form-label" id="lblRemarkAuth" name="lblRemarkAuth"></label>
+                    <label class="form-label" id="lblAuthEmpDate" name="lblAuthEmpDate"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Approval -->
+</form>
+<!-- Public Remark -->
+<div class="row" id="pubremark" style="display:none">
+    <p class="text-start"><button type="button" class="btn btn-info" id="btnSaveRemark" style="display:none">Save Remark</button></p>
+</div>
+<div class="row align-items-start">
+    <div class="col-md-6 mb-2">
+        <label class="form-label fw-bold bg-transparent">Public Remark (หมายเหตุ):</label>
+        <textarea class="form-control" name="pub_remark" id="pub_remark" rows="1" style="display:none"></textarea>
+    </div>
+</div>
+
+<div class="row align-items-start">
+    <div class="col-sm-12">
+        <table class="table table-sm" id="bindDataTableRemark">
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<span id="divHisRemark">
+<div class="row align-items-start">
+    <div class="col-md-10 mb-2">
+        <input type="text" class="form-control" name="hisremark" id="hisremark" placeholder="Public Remark.">
+    </div>
+    <div class="col-md-2 mb-2 align-middle">
+        <button class="btn btn-info ri-arrow-left-double-line me-1" id="btnAddHisRemark"> Add</button>
+        @* <a href="javascript:alert('Test');"><i class="ri-calendar-check-line text-success me-1"></i> <br/>+Add Remark</a> *@
+    </div>
+</div>
+</span>
+<!-- /Public Remark -->
+
+
+<div class="row">
+    <div class="col-md-2">
+        <span id="divBtnOwnerCancel"><button class="btn btn-warning" id="btnOwnerCancel">Cancel PR</button></span>
+    </div>
+    <div class="col-md-2">
+        
+    </div>
+    <div class="col-md-6"></div>
+</div>
+<div class="layout-demo-info">
+    <button class="btn btn-outline-secondary" id="toggleFullscreenBtn">
+        <i class="bx bx-fullscreen"></i> @strCaption
+    </button>
+    @if (sUROLEADMIN == "1")
+    {
+        <a id="procureprint" class="btn btn-secondary" target="_blank" href="/CTLAdmin/PrintPR?prno=@sDOC_NUMBER">🖨️ Print(FM-PR-016)</a>
+    }
+</div>
+
+@* ************** End Content ************** *@
+<hr class="my-12">
+<!-- Modal Warning-->
+<div class="modal fade" id="modalAuth" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="authwarning" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <input type="text" id="adminRole" value="@ViewData["UROLEADMIN"]" />
+                <h5 class="modal-title text-danger" id="authwarning">User Permission</h5>
+                @* <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
+            </div>
+            <div class="modal-body">
+                You don't have this permission
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnModalClose" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update Status-->
+<div class="modal fade" id="modalPrStatus" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="authwarning" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <input type="hidden" id="approvalRole" />
+                <h5 class="modal-title text-info" id="authwarning">PR Approval Confirmation</h5>
+                
+            </div>
+            <div class="modal-body">
+                <h5 class="modal-title" id="lblConfirmWarning"></h5>
+                <p class="text-center">
+                  <div class="row">
+                      <div class="col-sm-12">
+                      <p class="text-center">
+                        <input type="text" class="form-control form-control-sm" name="approval_remark" id="approval_remark" placeholder="Aproval Remark:"/>
+                      </p>
+                    </div>
+                  </div>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <p class="text-start">
+                  <button type="button" id="btnPrApproval" class="btn btn-info" data-bs-dismiss="modal">SAVE</button>
+                  <button type="button" id="btnApproveClose" class="btn btn-secondary" data-bs-dismiss="modal">CANCEL</button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Multiple Reject -->
+<div class="modal fade" id="modalPrStatusMulti" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="authwarningMulti" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                @* <input type="text" id="approvalRole" /> *@
+                <h5 class="modal-title text-warning" id="authwarningMulti">PR Approval Confirmation</h5>
+
+            </div>
+            <div class="modal-body">
+                <h5 class="modal-title" id="lblConfirmWarningMulti"></h5>
+                <p class="text-center">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <p class="text-center">
+                                <input type="text" class="form-control form-control-sm" name="approval_remarkMulti" id="approval_remarkMulti" placeholder="Reject Remark:" />
+                            </p>
+                        </div>
+                    </div>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <p class="text-start">
+                    <button type="button" id="btnPrApprovalRejMulti" class="btn btn-info" data-bs-dismiss="modal">SAVE</button>
+                    <button type="button" id="btnApproveCloseMulti" class="btn btn-secondary" data-bs-dismiss="modal">CANCEL</button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageScripts {
+    @* <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script> *@
+
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+
+    <script src="~/js/site.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+    @* <script src="~/js/prrequest_action.js"></script> *@
+        <script src="~/js/prapproval.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+}
+

@@ -1,0 +1,32 @@
+.testHidClass {
+  /*display: block;*/
+}
+.testNameClass {
+  /*display: block;*/
+}
+.textDisplay{
+  color:royalblue;
+}
+table, th, td {
+  width: 100%;
+  border-collapse: collapse;
+  font-size:14px;
+}
+.tableListPrdetail {
+  width:100%;
+}
+.form-control {
+  background: transparent;
+}
+.form-control:focus {
+  background: transparent;
+}
+.custom-number-btinfo {
+  background-color: #bfe5fe; /* A light blue shade */
+}
+.custom-number-input {
+  background-color: #e0f2f7; /* A light blue shade */
+}
+.custom-number-btapprove {
+  background-color: #f3e597; /* A light blue shade */
+}

@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "BT Procure PR.Online";
+
+}
+
+@section VendorStyles {
+<link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" />
+<link href="~/css/site.css" rel="stylesheet" />
+}
+
+@section VendorScripts {
+@* <script src="~/vendor/libs/apex-charts/apexcharts.js"></script> *@
+}
+
+@* ************** Content ************** *@
+<div class="row gy-12">
+    <!-- Col 2 card -->
+    <div class="col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                  <div class="col-12">
+                        <h5 class="text-end">WAITING APPROVAL</h5>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                        <!-- Start Table -->
+                        <div class="table-responsive text-nowrap">
+                            <table id="bindDataTableApproval" class="table table-hover my-custom-table" width="100%">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="col-hidden" style="display:none"></th>
+                                        <th>PR Information</th>
+                                        <th>PO Information</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /End Table -->
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <!--/ Col 2 card -->
+</div>
+
+@section PageScripts {
+    @* <script src="~/js/dashboards-analytics.js"></script> *@
+
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+    <script src="~/js/myprapprove.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+
+    @*     <script src="~/js/xlsx.full.min.js"></script>
+    <script src="~/js/jszip.min.js"></script>
+ *@
+
+}

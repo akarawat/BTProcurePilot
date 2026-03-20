@@ -1,0 +1,13 @@
+.hidNameClass {
+  display: none;
+}
+.testNameClass {
+  display: block;
+}
+.hidBatchClass {
+  display: block;
+  font-size: 12px;
+}
+.table_partlist {
+  font-size: 12px;
+}

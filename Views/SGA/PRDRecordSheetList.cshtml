@@ -1,0 +1,79 @@
+@{
+  ViewData["Title"] = "Parts Production Stock Tools";
+}
+
+@* ************** Content ************** *@
+@section PageStyles {
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+    <link href="~/css/datatables.css" rel="stylesheet" />
+    <link href="~/css/prdrecordsheetlist.css" rel="stylesheet" />
+    
+}
+<!-- Start Basic Bootstrap Table -->
+<div class="card">
+    
+    <div class="table-responsive text-nowrap">
+        <div class="container">
+            <div class="row card-header">
+                <div class="col align-self-start">
+                    <h5 class="card-header">รายการ WORK ORDER ทั้งหมด</h5>
+                </div>
+                @* <div class="col align-self-center">
+                </div>
+                <div class="col align-self-end">
+                </div>
+                <div class="col align-self-end">
+                </div> *@
+            </div>
+        </div>
+
+        <table id="bindDataTable" class="table table-hover" width="100%">
+            <caption>
+                Production records time sheet
+            </caption>
+            <thead>
+                <tr>
+                    <th>WO</th>
+                    <th>Item Parts.</th>
+                    <th>Item Name</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>
+</div>
+<!-- Users Basic Bootstrap Table -->
+<hr class="my-12">
+
+@section PageScripts {
+    @* <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script> *@
+
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+
+    <script src="~/js/prdrecordsheetlist.js"></script>
+}
+

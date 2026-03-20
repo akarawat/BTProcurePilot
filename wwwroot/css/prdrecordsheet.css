@@ -1,0 +1,64 @@
+.testNameClass {
+  display: block;
+}
+.textDisplay{
+  color:royalblue;
+}
+.tableTimeInfo {
+  font-size: 10px;
+}
+.trHeader {
+  font-size: 10px;
+}
+.tbodyInfo {
+  font-size: 10px;
+}
+/* Start Style Sheet for date */
+input[type="date"]::-webkit-datetime-edit, input[type="date"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button {
+  color: #fff;
+  position: relative;
+}
+
+input[type="date"]::-webkit-datetime-edit-year-field {
+  position: absolute !important;
+  border-left: 1px solid #8c8c8c;
+  padding: 2px;
+  color: #000;
+  left: 56px;
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field {
+  position: absolute !important;
+  border-left: 1px solid #8c8c8c;
+  padding: 2px;
+  color: #000;
+  left: 26px;
+}
+
+input[type="date"]::-webkit-datetime-edit-day-field {
+  position: absolute !important;
+  color: #000;
+  padding: 2px;
+  left: 4px;
+}
+/* End Style Sheet for date */
+
+input.rec_aqty, input.rec_setup, input.rec_mc, input.rec_lab, input.rec_aqty, input.rec_atotal, input.rec_eff {
+  width: 50px !important;
+  text-align: right;
+  padding: 2px; /* ปรับขนาดให้ดูพอดี */
+}
+/*input.rec_eff {
+  width: 50px !important;
+  text-align: right;
+  padding: 2px;*/ /* ปรับขนาดให้ดูพอดี */
+/*}
+input.rec_setup {
+  width: 50px !important;
+  text-align: right;
+  padding: 2px;*/ /* ปรับขนาดให้ดูพอดี */
+/*}*/
+.txtDate {
+  font-weight: bold;
+}
+

@@ -1,0 +1,20 @@
+/* Custom styles goes here */
+.imageLogo {
+  box-shadow: 8px 0px 8px 0px rgba(0.5, 0, 0.5, 0.3);
+}
+.success_label {
+  color: darkgreen;
+  text-underline-position:under;
+}
+.card2 .card-body {
+  height: 75vh;
+}
+.textBold {
+  font-weight: bold;
+}
+.my-custom-table {
+  margin-left: auto;
+}
+.col-hidden {
+  display: none;
+}

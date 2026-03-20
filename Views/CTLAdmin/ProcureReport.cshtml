@@ -1,0 +1,194 @@
+@{
+    var isFullscreen = ViewData["isFullscreen"]?.ToString() == "true";
+    var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
+    var menuFixed = isFullscreen ? "" : "menu-fixed";
+    var isNavbar = isFullscreen ? false : true;
+    var isMenu = isFullscreen ? false : true;
+    var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
+    //ViewData["navbarHideToggle"] = true;
+    // *** No Menus ***
+    ViewData["isMenu"] = isMenu;
+    ViewData["menuFixed"] = menuFixed;
+    // *** No Navbar ***
+    ViewData["isNavbar"] = isNavbar;
+    ViewData["navbarType"] = navbarType;
+}
+@{
+  ViewData["Title"] = "Procurement Report";
+  // List<HRUserModel> useHr = new List<HRUserModel>();
+  // useHr = Model.VMHrUserModel;
+}
+
+@* ************** Content ************** *@
+@section PageStyles {
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+    <link href="~/css/datatables.css" rel="stylesheet" />
+    <link href="~/css/usersetting.css" rel="stylesheet" />
+}
+<!-- Start Basic Bootstrap Table -->
+
+<!-- Start Dashboard -->
+<div class="row gy-6">
+  <!-- Congratulations card -->
+  <div class="col-md-12 col-lg-4">
+      <div class="card h-100">
+          <div class="card-body text-nowrap">
+              <h5 class="card-title mb-0 flex-wrap text-nowrap">Procurement PR. Tracking</h5>
+              <span class="h-6 text-secondary" id="id_lbl_all_pr"></span> <span class="h6 text-primary" id="id_all_pr">@ViewData["all_pr"]</span>
+              <br/>
+              <span class="h-6 text-secondary" id="id_lbl_completed"></span> <span class="h6 text-primary" id="id_completed">@ViewData["completed"]</span>
+              <br />
+              <span class="h-6 text-secondary" id="id_lbl_rfq"></span> <span class="h6 text-primary" id="id_rfq">@ViewData["rfqcount"] / @ViewData["rfqcount_quo"]</span>
+
+              <h4 class="text-bold mb-0" id="lbl_perc"></h4>
+          </div>
+      </div>
+  </div>
+  <!--/ Congratulations card -->
+ <!-- Transactions -->
+  <div class="col-lg-8">
+    <div class="card h-100">
+      
+      
+      <div class="card-body pt-lg-10">
+        
+        <div class="row g-6">
+
+          <div class="col-md-4 col-6">
+            <div class="d-flex align-items-center">
+              <div class="avatar">
+                <div class="avatar-initial bg-primary rounded shadow-xs">
+                  <i class="ri-pie-chart-2-line ri-24px"></i>
+                </div>
+              </div>
+              <div class="ms-3">
+                <p class="mb-0"><span id="id_lbl_submited"></span></p>
+                <h5 class="mb-0"><span id="id_submited">@ViewData["submited"]</span></h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-6">
+            <div class="d-flex align-items-center">
+              <div class="avatar">
+                <div class="avatar-initial bg-success rounded shadow-xs">
+                  <i class="ri-group-line ri-24px"></i>
+                </div>
+              </div>
+              <div class="ms-3">
+                <p class="mb-0"><span id="id_lbl_inprocess"></span></p>
+                <h5 class="mb-0"><span id="id_inprocess">@ViewData["inprocess"]</span></h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-6">
+            <div class="d-flex align-items-center">
+              <div class="avatar">
+                <div class="avatar-initial bg-info rounded shadow-xs">
+                  <i class="ri-money-dollar-circle-line ri-24px"></i>
+                </div>
+              </div>
+              <div class="ms-3">
+                <p class="mb-0"><span id="id_lbl_procure_rec"></span></p>
+                <h5 class="mb-0"><span id="id_procure_rec">@ViewData["procure_rec"]</span></h5>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--/ Transactions -->
+<!-- /End Dashboard -->
+</div>
+
+<br />
+
+<div class="card">
+    <div class="table-responsive text-nowrap">
+        <div class="container">
+            <div class="row card-header">
+                <distributed-cache
+                    class="col-sm-2 align-self-start">
+                    <h5 class="card-header">@ViewData["Title"]</h5>
+                </distributed-cache>
+                <div class="col-sm-12 align-self-end">
+                    <button class="btn btn-success" type="button" id="btnExport" style="display:block !important;">EXPORT</button>
+                </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                    <table id="bindDataTable" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>PR Create</th>
+                                <th>Date</th>
+                                <th>PR No</th>
+                                <th>Status</th>
+
+                                <th>Approval 1</th>
+                                <th>Approval 1/2</th>
+                                <th>Manager</th>
+                                <th>MD.</th>
+                                <th>Discount</th>
+                                <th>Total</th>
+                                <th>Currency</th>
+
+                                <th>Project No</th>
+                                <th>Requester</th>
+                                <th>Reason</th>
+                                <th>Approx Date</th>
+                                <th>Update Date</th>
+                                <th>Proc.Receive</th>
+                                <th>PO No</th>
+                                @* <th>Remark</th> *@
+                            </tr>
+                        </thead>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Users Basic Bootstrap Table -->
+<div class="layout-demo-info">
+    <button class="btn btn-outline-secondary" id="toggleFullscreenBtn">
+        <i class="bx bx-fullscreen"></i> @strCaption
+    </button>
+</div>
+<hr class="my-12">
+<!-- Modal Warning-->
+<div class="modal fade" id="modalAuth" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="authwarning" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="authwarning">User Permission</h5>
+        @* <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
+      </div>
+      <div class="modal-body">
+        You don't have this permission
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btnModalClose" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section PageScripts {
+    
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+
+    <script src="~/js/procurereport.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+
+    <script src="~/js/xlsx.full.min.js"></script>
+    <script src="~/js/jszip.min.js"></script>
+}
+

@@ -1,0 +1,305 @@
+@model AspnetCoreMvcFull.Models.PRPrintViewModel
+@{
+    Layout = null; // ไม่ใช้ Layout เพื่อให้พิมพ์เต็ม A4
+    //Layout = "_BlankLayout";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Purchase request print form FM-PR-016</title>
+    <!-- Fonts & Flag icons -->
+    <link rel="stylesheet" href="~/vendor/fonts/remixicon/remixicon.css" />
+    <link rel="stylesheet" href="~/vendor/libs/node-waves/node-waves.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="~/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="~/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="~/css/demo.css" />
+
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma;
+        font-size: 7pt;
+        margin: 0.5cm;
+      }
+   
+      .a4-page {
+        width: 100%;
+        page-break-after: always;
+      }
+
+      .logo {
+        width: 80px;
+        height: auto;
+      }
+
+      .signature-box {
+        margin-top: 60px;
+      }
+
+      .signature-box td {
+        height: 0px;
+        /* vertical-align: bottom; */
+        /* text-align: center; */
+        font-size: 9pt;
+      }
+
+      .title {
+        text-align: center;
+        font-weight: bold;
+        font-size: 10pt;
+        margin-bottom: 10px;
+      }
+      .procurearea{
+        background-color:#f2f2f2;
+      }
+      .formno {
+        text-align: right;
+        font-size: 7pt;
+      }
+    </style>
+</head>
+<body>
+    <div class="a4-page">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 20%;">
+                    <img src="~/img/avatars/bnn_logo-address100.png" style="width: 100%;" class="logo" />
+                </td>
+                <td style="text-align: left;" valign="top">
+                    <div class="title">
+                        Purchase Requisition Form
+                    </div>
+                    <b>Approx required date :</b> @Model.PRHeader.approx_dt_txt <br />
+                    Investment Request  Credit Request No. @Model.PRHeader.invcreditno
+                    <br />
+                    <font color="darkblue">
+                      <i>
+                        Urgent - PO issue after receive PR 3 working days<br />
+                        Normal - PO issue after receive PR 10 working days
+                      </i>
+                    </font>
+                </td>
+                <td>
+                    <div><strong>PR Number:</strong>
+                      @* @Model.PRHeader.projectno.Length
+                      @Model.PRHeader.purpose_type *@
+                        @{
+                            string pr_prefix = "";
+                            string proj_prefix = "";
+                            if (Model.PRHeader.projectno.Length >= 3)
+                            {
+                                proj_prefix = "(P)";
+                            }
+                            if (Model.PRHeader.purpose_type == 3)
+                            {
+                                pr_prefix = "(RFQ)";
+                            }
+                        }
+                        @pr_prefix @proj_prefix@Model.PRHeader.prno
+                    </div>
+                    <div>Project Number: @Model.PRHeader.projectno</div>
+                    <br />
+                    <div class="procurearea" style="text-align: right; border: 1px solid #000;">
+                      <div><strong>Area for purchaser use only &nbsp;&nbsp;&nbsp;</strong></div>
+                      <div><strong>PR Received date:</strong> @Model.PRHeader.pr_recvdt_txt &nbsp;&nbsp;&nbsp;</div>
+                      <div><strong>PO Number: </strong> @Model.PRHeader.pr_recvpono &nbsp;&nbsp;&nbsp;</div>
+                    </div>
+                </div>
+            </tr>
+        </table>
+        <table style="width: 100%;">
+          <tr>
+            <td style="text-align: left;">
+              <b>Purpose:</b><br />
+                @{
+                    int? iProp = Model.PRHeader.purpose_type;
+                    string chk1 = "";
+                    string chk2 = "";
+                    string chk3 = "";
+                    if (iProp == 1)
+                    {
+                        chk1 = "checked";
+                    }
+                    if (iProp == 2)
+                    {
+                        chk2 = "checked";
+                    }
+                    if (iProp == 3)
+                    {
+                        chk3 = "checked";
+                    }
+                }
+
+                <input type="radio" name="rdoPurpose" id="rdoPurpose1" value="1" @chk1 disabled>
+                <label for="rdoPurpose1">Order external AX system</label><br />
+                <input type="radio" name="rdoPurpose" id="rdoPurpose2" value="2" @chk2 disabled>
+                <label for="rdoPurpose2">Order in the AX system</label><br />
+                <input type="radio" name="rdoPurpose" id="rdoPurpose3" value="3" @chk3 disabled>
+                <label for="rdoPurpose3">Request quotation only</label>
+            </td>
+            <td style="text-align: left;">
+                <b>Reference:</b><br />
+                Change No./NCR No./WO No./ Work Permit No.: @Model.PRHeader.ref_docs <br />
+                <b>Reason to order:</b><br />
+                <p style="text-align: left; margin: 5px; width:100%">
+                  @Model.PRHeader.pr_reason
+                </p>
+            </td>
+            <td style="text-align: left;">
+
+            </td>
+          </tr>
+        </table>
+        <table style="width: 100%;">
+          <tr>
+            <td style="text-align: left;">
+              @* Suggested Supplier *@
+              @{
+                string currency = "";
+              }
+              @foreach (var itemVend in Model.VendorList)
+              {
+                    if (itemVend.sugg_item == 1 && itemVend.currency != null)
+                    {
+                        currency = itemVend.currency;
+                    }
+                    <b>Suggested Supplier</b> 
+
+                    @itemVend.vencode @itemVend.name_supp 
+
+                    @if(itemVend.venvc != "")
+                    {
+                      <b>V/C</b> @itemVend.venvc    
+                    }
+                    
+                    @if(itemVend.vencontact != "")
+                    {
+                      <b>Contact</b> @itemVend.vencontact    
+                    }
+                    @if(itemVend.venemail != "")
+                    {
+                      <b>E-Mail.</b> 
+                      @itemVend.venemail <br />
+                    }
+                    @if (itemVend.ventelfax != "")
+                    {
+                      <b>Tel.</b> @itemVend.ventelfax
+                    }
+                    if (itemVend.venremark != "")
+                    {
+                      @itemVend.venremark
+                    }
+                    @if(itemVend.quoref_supp != "")
+                    {
+                      <b>Referance: Quoation No.</b> 
+                      @itemVend.quoref_supp    
+                    }
+                    @if (itemVend.refnodt_supp_txt != "")
+                    {
+                      @itemVend.refnodt_supp_txt    
+                    }
+                    
+                    <hr style="width:100%; margin-top: 2px; border: 0.5px solid #b0b7c0;" />
+                }
+            </td>
+          </tr>
+        </table>
+        <hr />
+
+        @* <p><strong>Project No:</strong> @Model.PRHeader.projectno</p>
+        <p><strong>Department:</strong> @Model.PRHeader.reqDepCode</p>
+        <p><strong>Requester:</strong> @Model.PRHeader.empcode_txt</p>
+        <p><strong>Reason:</strong> @Model.PRHeader.pr_reason</p> *@
+
+        <table style="width:100%; margin-top: 20px; border: 1px solid #000;" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #000;">BT No</th>
+                    <th style="border: 1px solid #000;">Description</th>
+                    <th style="border: 1px solid #000;">Model</th>
+                    <th style="border: 1px solid #000;">Acc Code</th>
+                    <th style="border: 1px solid #000;">Cost Dept</th>
+                    <th style="border: 1px solid #000;">Qty</th>
+                    <th style="border: 1px solid #000;">Unit</th>
+                    <th style="border: 1px solid #000;">Unit Price</th>
+                    <th style="border: 1px solid #000;">Total</th>
+                </tr>
+            </thead>
+            <tbody class="bordered">
+                @{
+                  decimal? totalAmount = 0;
+                }
+                @foreach (var item in Model.DetailList)
+                {
+                    totalAmount += item.item_amount;
+                    <tr>
+                        <td style="border: 1px solid #b0b7c0;">@item.item_btnumber</td>
+                        <td style="border: 1px solid #b0b7c0;">@item.item_descript</td>
+                        <td style="border: 1px solid #b0b7c0;">@item.item_model</td>
+                        <td style="border: 1px solid #b0b7c0;">@item.item_acccode</td>
+                        <td style="border: 1px solid #b0b7c0;">@item.item_costdep</td>
+                        <td style="border: 1px solid #b0b7c0; text-align:right">@item.item_qty</td>
+                        <td style="border: 1px solid #b0b7c0;">@item.item_unit</td>
+                        <td style="border: 1px solid #b0b7c0; text-align:right">@item.item_unitprice</td>
+                        <td style="border: 1px solid #b0b7c0; text-align:right">@item.item_amount</td>
+                    </tr>
+                }
+                <tr style="font-weight:bold; background-color:#f2f2f2">
+                    <td colspan="6" style="text-align:right; border: 0.2px solid #b0b7c0;">Total Amount:</td>
+                    <td colspan="3" style="text-align:right; border: 0.2px solid #b0b7c0;">
+                        <span id="prcurrency">@Model.PRHeader.prcurrency</span> 
+                        @String.Format("{0:N2}", totalAmount ?? 0)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="signature-box">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="border: 0.2px solid #b0b7c0;" width="25%"> <br />
+                      <b>Requester Name:</b> <br />( @Model.PRHeader.empcode_txt ) <br />
+                      Dept: @Model.PRHeader.reqDepCode <br />
+                      Date: @Model.PRHeader.reqDate_txt
+                    </td>
+                    <td style="border: 0.2px solid #b0b7c0;" width="25%">
+                      <b>Approved by:</b> <br />
+                      Name: @Model.PRHeader.appEmp_txt<br />
+                      Date: @Model.PRHeader.appDate_txt
+                    </td>
+                    <td style="border: 0.2px solid #b0b7c0;" width="25%">
+                      <b>Countersigned by:</b> <br />
+                      Name: @Model.PRHeader.countEmp_txt<br />
+                      Date: @Model.PRHeader.countDate_txt
+                    </td>
+                    <td style="border: 0.2px solid #b0b7c0;" width="25%">
+                      <b>Authorized by</b> <br />
+                      Name: @Model.PRHeader.authEmp_txt<br />
+                      Date: @Model.PRHeader.authDate_txt
+                    </td>
+                </tr>
+            </table>
+        </div>
+    <div class="formno">
+      FM-PR-016
+    </div>
+
+    <div class="layout-demo-info" style="display:none">
+        <button class="btn btn-outline-secondary" onclick="printPr()">
+            🖨️ Print(FM-PR-016)
+        </button>
+    </div>
+
+    <script>
+      function printPr(){
+        if (!confirm('Confirm to print')) return;
+        window.print();
+      }
+      //printPr();
+      //window.print();
+    </script>
+</body>
+</html>
