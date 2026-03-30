@@ -5,6 +5,13 @@ $(document).ready(function () {
   const urlParams = new URLSearchParams(window.location.search);
   docno = urlParams.get('docno');
 
+  let UserDepCode = $("#reqDepCode").val();
+  if (UserDepCode == 310) {
+    document.getElementById("DivAppEmp2").style.display = "block";
+  } else {
+    document.getElementById("DivAppEmp2").style.display = "none";
+  }
+  
   if (docno) {
     $.ajax({
       url: '/CTLAdmin/GetPRByDocNo?docno=' + encodeURIComponent(docno),

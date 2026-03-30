@@ -14,6 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\js\prdrecordsheet - bak.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Controllers\SGAController-bak.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Views\PrintPR\" />
     <Folder Include="wwwroot\UploadedFiles\" />
   </ItemGroup>

@@ -560,7 +560,7 @@
                     </div>
                   </div>
                   <!-- Approval 2 -->
-                  <div class="row">
+                    <div class="row" id="DivAppEmp2" style="display:none">
                     <div class="col-md-12">
                       <input type="hidden" id="lblAppEmp2Mail" name="lblAppEmp2Mail" />
                       <label class="form-label text-secondary" id="lblTxtEmp2">Approval 2 (Option)</label>
@@ -771,7 +771,7 @@
     <script src="~/js/datatables.js"></script>
     <script src="~/js/datatables.min.js"></script>
 
-    <script src="~/js/site.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+    @* <script src="~/js/site.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script> *@
     @* <script src="~/js/prrequest_action.js"></script> *@
         <script src="~/js/prapproval.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
 }

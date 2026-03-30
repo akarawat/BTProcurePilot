@@ -7,6 +7,14 @@ $(document).ready(function () {
   let strQuoReturn = "";
   if (docno) {
 
+    //let UserDepCode = $("#reqDepCode").val();
+    //if (UserDepCode == 310) {
+    //  document.getElementById("DivAppEmp2").style.display = "block";
+    //} else {
+    //  document.getElementById("DivAppEmp2").style.display = "none";
+    //}
+    document.getElementById("DivAppEmp2").style.display = "block";
+
     $.ajax({
       url: '/CTLAdmin/GetPRByDocNo?docno=' + encodeURIComponent(docno),
       type: 'GET',
