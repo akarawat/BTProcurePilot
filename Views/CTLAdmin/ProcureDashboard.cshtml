@@ -25,9 +25,9 @@
     <link href="~/css/datatables.css" rel="stylesheet" />
     <link href="~/css/usersetting.css" rel="stylesheet" />
 }
-<!-- Start Basic Bootstrap Table -->
 
 <!-- Start Dashboard -->
+
 <div class="container mt-4">
 
     <h3 class="mb-4">📊 Procurement KPI Dashboard</h3>
@@ -123,7 +123,7 @@
     <!-- Line -->
     <div class="col-md-8">
         <div class="card shadow">
-            <div class="card-header">PR Trend (Last 30 Days)</div>
+            <div class="card-header">PR Trend (By Days)</div>
             <div class="card-body">
                 <canvas id="lineChart" height="140"></canvas>
             </div>
@@ -131,7 +131,33 @@
     </div>
 
 </div>
+<br />
+<div class="card mb-3 shadow">
+    <div class="card-body">
+        <div class="row align-items-end">
 
+            <div class="col-md-3">
+                <label>Start Date</label>
+                <input type="date" id="start_dt" class="form-control">
+            </div>
+
+            <div class="col-md-3">
+                <label>End Date</label>
+                <input type="date" id="end_dt" class="form-control">
+            </div>
+
+            <div class="col-md-3">
+                <button class="btn btn-primary" id="btnSearch">🔍 Search</button>
+                <button class="btn btn-secondary" id="btnClear">Clear</button>
+            </div>
+
+            <div class="col-md-3 text-end" style="display:none">
+                <button class="btn btn-success" id="btnExport">⬇ Export Excel</button>
+            </div>
+
+        </div>
+    </div>
+</div>
 <!-- /End Dashboard -->
 <!-- Users Basic Bootstrap Table -->
 <div class="layout-demo-info">
@@ -149,6 +175,7 @@
     <script src="~/js/chart.js"></script>
     <script src="~/js/chartjs-plugin-datalabels@2.js"></script>
     <script src="~/js/procuredashboard.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
-
+    <script src="~/js/xlsx.full.min.js"></script>
+    <script src="~/js/jszip.min.js"></script>
 }
 

@@ -115,7 +115,7 @@ public class CTLAdminController : Controller
     return View();
   }
   [HttpGet]
-  public JsonResult GetPRSummaryKPI()
+  public JsonResult GetPRSummaryKPI(string start_dt, string end_dt)
   {
     IConfiguration config = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
@@ -125,12 +125,16 @@ public class CTLAdminController : Controller
     string connStr = config.GetConnectionString("BtProcureConn");
 
     PRSummaryKPIModel result = new PRSummaryKPIModel();
+    DateTime? start = string.IsNullOrEmpty(start_dt) ? null : Convert.ToDateTime(start_dt);
+    DateTime? end = string.IsNullOrEmpty(end_dt) ? null : Convert.ToDateTime(end_dt);
 
     using (SqlConnection con = new SqlConnection(connStr))
     {
       con.Open();
       SqlCommand cmd = new SqlCommand("SP_GetPRSummaryKPI", con);
       cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.Add(new SqlParameter("@start_dt", SqlDbType.DateTime) { Value = (object)start ?? DBNull.Value });
+      cmd.Parameters.Add(new SqlParameter("@end_dt", SqlDbType.DateTime) { Value = (object)end ?? DBNull.Value });
 
       using (SqlDataReader rd = cmd.ExecuteReader())
       {
@@ -147,9 +151,11 @@ public class CTLAdminController : Controller
     return Json(result);
   }
   [HttpGet]
-  public JsonResult GetPRStatusSummary()
+  public JsonResult GetPRStatusSummary(string start_dt, string end_dt)
   {
     var result = new { open_pr = 0, closed_pr = 0 };
+    DateTime? start = string.IsNullOrEmpty(start_dt) ? null : Convert.ToDateTime(start_dt);
+    DateTime? end = string.IsNullOrEmpty(end_dt) ? null : Convert.ToDateTime(end_dt);
 
     IConfiguration config = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
@@ -161,6 +167,8 @@ public class CTLAdminController : Controller
       con.Open();
       SqlCommand cmd = new SqlCommand("SP_GetPRStatusSummary", con);
       cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.Add(new SqlParameter("@start_dt", SqlDbType.DateTime) { Value = (object)start ?? DBNull.Value });
+      cmd.Parameters.Add(new SqlParameter("@end_dt", SqlDbType.DateTime) { Value = (object)end ?? DBNull.Value });
 
       using (SqlDataReader rd = cmd.ExecuteReader())
       {
@@ -178,9 +186,12 @@ public class CTLAdminController : Controller
     return Json(result);
   }
   [HttpGet]
-  public JsonResult GetPRDailyTrend()
+  public JsonResult GetPRDailyTrend(string start_dt, string end_dt)
   {
     var list = new List<object>();
+    DateTime? start = string.IsNullOrEmpty(start_dt) ? null : Convert.ToDateTime(start_dt);
+    DateTime? end = string.IsNullOrEmpty(end_dt) ? null : Convert.ToDateTime(end_dt);
+
     IConfiguration config = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json")
@@ -191,6 +202,8 @@ public class CTLAdminController : Controller
       con.Open();
       SqlCommand cmd = new SqlCommand("SP_GetPRDailyTrend", con);
       cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.Add(new SqlParameter("@start_dt", SqlDbType.DateTime) { Value = (object)start ?? DBNull.Value });
+      cmd.Parameters.Add(new SqlParameter("@end_dt", SqlDbType.DateTime) { Value = (object)end ?? DBNull.Value });
 
       using (SqlDataReader rd = cmd.ExecuteReader())
       {
@@ -208,7 +221,7 @@ public class CTLAdminController : Controller
     return Json(list);
   }
   [HttpGet]
-  public JsonResult GetPRMonthlySummary()
+  public JsonResult GetPRMonthlySummary(string start_dt, string end_dt)
   {
     IConfiguration config = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
@@ -218,12 +231,16 @@ public class CTLAdminController : Controller
     string connStr = config.GetConnectionString("BtProcureConn");
 
     var list = new List<object>();
+    DateTime? start = string.IsNullOrEmpty(start_dt) ? null : Convert.ToDateTime(start_dt);
+    DateTime? end = string.IsNullOrEmpty(end_dt) ? null : Convert.ToDateTime(end_dt);
 
     using (SqlConnection con = new SqlConnection(connStr))
     {
       con.Open();
       SqlCommand cmd = new SqlCommand("SP_GetPRMonthlySummary", con);
       cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.Add(new SqlParameter("@start_dt", SqlDbType.DateTime) { Value = (object)start ?? DBNull.Value });
+      cmd.Parameters.Add(new SqlParameter("@end_dt", SqlDbType.DateTime) { Value = (object)end ?? DBNull.Value });
 
       using (SqlDataReader rd = cmd.ExecuteReader())
       {
@@ -242,9 +259,12 @@ public class CTLAdminController : Controller
     return Json(list);
   }
   [HttpGet]
-  public JsonResult GetTopDepartment()
+  public JsonResult GetTopDepartment(string start_dt, string end_dt)
   {
     var list = new List<object>();
+    DateTime? start = string.IsNullOrEmpty(start_dt) ? null : Convert.ToDateTime(start_dt);
+    DateTime? end = string.IsNullOrEmpty(end_dt) ? null : Convert.ToDateTime(end_dt);
+
     IConfiguration config = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json")
@@ -255,6 +275,8 @@ public class CTLAdminController : Controller
       con.Open();
       SqlCommand cmd = new SqlCommand("SP_GetTopDepartment", con);
       cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.Add(new SqlParameter("@start_dt", SqlDbType.DateTime) { Value = (object)start ?? DBNull.Value });
+      cmd.Parameters.Add(new SqlParameter("@end_dt", SqlDbType.DateTime) { Value = (object)end ?? DBNull.Value });
 
       using (SqlDataReader rd = cmd.ExecuteReader())
       {
