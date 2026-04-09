@@ -20,7 +20,7 @@
     
     <script src="~/js/datatables.js"></script>
     <script src="~/js/datatables.min.js"></script>
-    <script src="~/js/index-dashboard.js"></script>
+    <script src="~/js/index-dashboard.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
 
     @*     <script src="~/js/xlsx.full.min.js"></script>
     <script src="~/js/jszip.min.js"></script>
@@ -82,6 +82,7 @@
                                         <th>PR Information</th>
                                         <th>PO Information</th>
                                         <th>Remarks</th>
+                                        <th>Approval Status</th>
                                     </tr>
                                 </thead>
                             </table>

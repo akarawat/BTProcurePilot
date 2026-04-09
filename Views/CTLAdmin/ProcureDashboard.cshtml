@@ -1,0 +1,154 @@
+@{
+    var isFullscreen = ViewData["isFullscreen"]?.ToString() == "true";
+    var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
+    var menuFixed = isFullscreen ? "" : "menu-fixed";
+    var isNavbar = isFullscreen ? false : true;
+    var isMenu = isFullscreen ? false : true;
+    var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
+    //ViewData["navbarHideToggle"] = true;
+    // *** No Menus ***
+    ViewData["isMenu"] = isMenu;
+    ViewData["menuFixed"] = menuFixed;
+    // *** No Navbar ***
+    ViewData["isNavbar"] = isNavbar;
+    ViewData["navbarType"] = navbarType;
+}
+@{
+  ViewData["Title"] = "Procurement Report";
+  // List<HRUserModel> useHr = new List<HRUserModel>();
+  // useHr = Model.VMHrUserModel;
+}
+
+@* ************** Content ************** *@
+@section PageStyles {
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+    <link href="~/css/datatables.css" rel="stylesheet" />
+    <link href="~/css/usersetting.css" rel="stylesheet" />
+}
+<!-- Start Basic Bootstrap Table -->
+
+<!-- Start Dashboard -->
+<div class="container mt-4">
+
+    <h3 class="mb-4">📊 Procurement KPI Dashboard</h3>
+
+    <div class="row">
+
+        <!-- Total PR -->
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3 shadow">
+                <div class="card-body text-center">
+                    <h5>Total PR</h5>
+                    <h2 id="total_pr">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Open PR -->
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3 shadow">
+                <div class="card-body text-center">
+                    <h5>Open PR</h5>
+                    <h2 id="open_pr">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Closed PR -->
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3 shadow">
+                <div class="card-body text-center">
+                    <h5>Closed PR</h5>
+                    <h2 id="closed_pr">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yield -->
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3 shadow">
+                <div class="card-body text-center">
+                    <h5>Yield %</h5>
+                    <h2 id="yield_percent">0%</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Refresh Button -->
+    @* <div class="text-end">
+        <button class="btn btn-outline-primary btn-sm" id="btnRefresh">🔄 Refresh</button>
+    </div> *@
+
+</div>
+
+<div class="row mt-4">
+
+    <!-- Monhtly -->
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header"><h5>📊 PR Monthly Summary (Jan–Dec)</h5></div>
+            <div class="card-body">
+                <canvas id="prMonthlyChart" height="90"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Department -->
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header">Top Department</div>
+            <div class="card-body">
+                <canvas id="deptChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Monthly End -->
+<div class="row mt-4">
+
+    <!-- Donut -->
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header">Open vs Closed</div>
+            <div class="card-body">
+                <canvas id="donutChart" ></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Line -->
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header">PR Trend (Last 30 Days)</div>
+            <div class="card-body">
+                <canvas id="lineChart" height="140"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- /End Dashboard -->
+<!-- Users Basic Bootstrap Table -->
+<div class="layout-demo-info">
+    <button class="btn btn-outline-secondary" id="toggleFullscreenBtn">
+        <i class="bx bx-fullscreen"></i> @strCaption
+    </button>
+</div>
+
+@section PageScripts {
+    
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+    <script src="~/js/chart.js"></script>
+    <script src="~/js/chartjs-plugin-datalabels@2.js"></script>
+    <script src="~/js/procuredashboard.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+
+}
+

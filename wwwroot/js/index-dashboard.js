@@ -136,11 +136,40 @@ $(document).ready(function () {
                 let rem_approve = "";
                 let rem_mgr = "";
                 let rem_md = "";
-                if (row.procure_remark != '') { rem_proc = '<b>Procurement: </b>' + row.procure_remark + '<br/>'; }
-                if (row.remarkEmp != '') { rem_approve = '<b>Approval: </b>' + row.remarkEmp + '<br/>'; }
-                if (row.remarkCount != '') { rem_mgr = '<b>MGR: </b>' + row.remarkCount + '<br/>'; }
-                if (row.remarkAuth != '') { rem_md = '<b>MD: </b>' + row.remarkAuth; }
                 let concat = rem_proc + rem_approve + rem_mgr + rem_md;
+                return concat;
+              }
+            },
+            {
+              render: function (data, type, row) {
+                let txt_appEmp = "";
+                let txt_appEmp2 = "";
+                let txt_countEmp = "";
+                let txt_authEmp = "";
+
+
+                if (row.appEmp != '') {
+                  let flagEmp = "";
+                  if (row.appFlag == 1) flagEmp = "<b>Approval: </b>Approved"; else flagEmp = "<b>Approval: </b>Pending";
+                  txt_appEmp = flagEmp + '<br/>';
+                }
+                if (row.appEmp2 != '') {
+                  let flagEmp2 = "";
+                  if (row.appFlag2 == 1) flagEmp2 = "<b>Approval2: </b>Approved"; else flagEmp2 = "<b>Approval2: </b>Pending";
+                  txt_appEmp2 = flagEmp2 + '<br/>';
+                }
+                if (row.countEmp != '') {
+                  let flagCount = "";
+                  if (row.countFlag == 1) flagCount = "<b>MGR: </b>Approved"; else flagCount = "<b>MGR: </b>Pending";
+                  txt_countEmp = flagCount + '<br/>';
+                }
+                if (row.authEmp != '') {
+                  let flagAuth = "";
+                  if (row.authFlag == 1) flagAuth = "<b>MD: </b> Approved"; else flagAuth = "<b>MD: </b> Pending";
+                  txt_authEmp = flagAuth;
+                }
+
+                let concat = txt_appEmp + txt_appEmp2 + txt_countEmp + txt_authEmp;
                 return concat;
               }
             }

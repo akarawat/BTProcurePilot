@@ -50,7 +50,9 @@
         <!-- Dashboards -->
         <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Dashboards")
                 || currentPage.StartsWith("/CTLAdmin/PRNewRequest")
-                || currentPage.StartsWith("/CTLAdmin/ProcureReport") ? " active open" : "")'>
+                || currentPage.StartsWith("/CTLAdmin/ProcureDashboard")
+                || currentPage.StartsWith("/CTLAdmin/ProcureReport")
+                || currentPage.StartsWith("/CTLAdmin/PRApproval") ? " active open" : "")'>
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ri-home-smile-line"></i>
                 <div>HOME PROCUREMENT</div>
@@ -58,23 +60,45 @@
                     {
                         @if(Convert.ToInt32(ViewData["OPENDOC"].ToString()) != 0)
                         {
-                            <div class="badge bg-danger rounded-pill ms-auto" id="lblDocOpen">
+                            <div class="badge bg-info rounded-pill ms-auto" id="lblDocOpen">
                             @ViewData["OPENDOC"]
                             </div>
                         }
                     }
             </a>
             <ul class="menu-sub">
+
+                <li class='menu-item@(currentPage == "/CTLAdmin/ProcureDashboard" ? " active" : "")'>
+                    <a asp-controller="CTLAdmin" asp-action="ProcureDashboard" class="menu-link">
+                        <i class="ri-bar-chart-box-line"></i>
+                        <div>Procure. Dashboard</div>
+                    </a>
+                </li>
                 <li class='menu-item@(currentPage == "/" ? " active" : "")'>
                     <a asp-controller="Dashboards" asp-action="Index" class="menu-link">
                         <div>ALL REQUEST</div>
+                        @if (ViewData["PENDING"] != null)
+                        {
+                            if (ViewData["PENDING"].ToString().Trim() == "0")
+                            {
+                                <div class="badge bg-success rounded-pill ms-auto">
+                                    @ViewData["PENDING"]
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="badge bg-danger rounded-pill ms-auto">
+                                    @ViewData["PENDING"]
+                                </div>
+                            }
+                        }
                     </a>
                 </li>
-                <li class='menu-item@(currentPage == "/Dashboards/AllMyPrApprove" ? " active" : "")'>
+                @* <li class='menu-item@(currentPage == "/Dashboards/AllMyPrApprove" ? " active" : "")'>
                     <a asp-controller="Dashboards" asp-action="AllMyPrApprove" class="menu-link">
                         <div>WAITING APPROVAL</div>
                     </a>
-                </li>
+                </li> *@
                 <li class='menu-item@(currentPage == "/CTLAdmin/PRNewRequest" ? " active" : "")'>
                     <a asp-controller="CTLAdmin" asp-action="PRNewRequest" class="menu-link">
                         <div>NEW REQUEST</div>
@@ -84,7 +108,8 @@
                 {
                   <li class='menu-item@(currentPage == "/CTLAdmin/ProcureReport" ? " active" : "")'>
                     <a asp-controller="CTLAdmin" asp-action="ProcureReport" class="menu-link">
-                        <div>Procurement Report</div>
+                      <i class="menu-icon ri-settings-line"></i>
+                        <div>Procure. Report</div>
                     </a>
                   </li>
                 }

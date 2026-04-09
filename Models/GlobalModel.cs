@@ -69,4 +69,11 @@ namespace AspnetCoreMvcFull.Models
       public int TotalMinimum { get; set; }
       public int DiffQty { get; set; }
   }
+  public class PRSummaryKPIModel
+  {
+    public int total_pr { get; set; }
+    public int open_pr { get; set; }
+    public int closed_pr { get; set; }
+    public decimal yield_percent { get; set; }
+  }
 }

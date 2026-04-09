@@ -25,6 +25,7 @@ public class CTLAdminController : Controller
   //public IActionResult PRDRecordSheet() => View();
   private readonly IWebHostEnvironment _env;
   private readonly IConfiguration _config;
+  DataAccess daAccess = new DataAccess();
   [HttpGet]
   public IActionResult AccCodeList()
   {
@@ -96,8 +97,179 @@ public class CTLAdminController : Controller
       ViewData["rfqcount_quo"] = rfqcount_quo;
     }
     con.Close();
+    string txtEMPCODE = HttpContext.Session.GetString(SessionModel.EMPCODE);
+    List<string> lstPending = daAccess.GetPendingApprove(txtEMPCODE);
+    ViewData["PENDING"] = lstPending[0];
 
     return View();
+  }
+  [HttpGet]
+  public IActionResult ProcureDashboard(string? search)
+  {
+    var isFullscreen = Request.Query["fullscreen"]; // หรือ TempData
+    ViewData["isFullscreen"] = isFullscreen.ToString().ToLower();
+
+    string txtEMPCODE = HttpContext.Session.GetString(SessionModel.EMPCODE);
+    List<string> lstPending = daAccess.GetPendingApprove(txtEMPCODE);
+    ViewData["PENDING"] = lstPending[0];
+    return View();
+  }
+  [HttpGet]
+  public JsonResult GetPRSummaryKPI()
+  {
+    IConfiguration config = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json")
+        .Build();
+
+    string connStr = config.GetConnectionString("BtProcureConn");
+
+    PRSummaryKPIModel result = new PRSummaryKPIModel();
+
+    using (SqlConnection con = new SqlConnection(connStr))
+    {
+      con.Open();
+      SqlCommand cmd = new SqlCommand("SP_GetPRSummaryKPI", con);
+      cmd.CommandType = CommandType.StoredProcedure;
+
+      using (SqlDataReader rd = cmd.ExecuteReader())
+      {
+        if (rd.Read())
+        {
+          result.total_pr = Convert.ToInt32(rd["total_pr"]);
+          result.open_pr = Convert.ToInt32(rd["open_pr"]);
+          result.closed_pr = Convert.ToInt32(rd["closed_pr"]);
+          result.yield_percent = Convert.ToDecimal(rd["yield_percent"]);
+        }
+      }
+    }
+
+    return Json(result);
+  }
+  [HttpGet]
+  public JsonResult GetPRStatusSummary()
+  {
+    var result = new { open_pr = 0, closed_pr = 0 };
+
+    IConfiguration config = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json")
+        .Build();
+    string connStr = config.GetConnectionString("BtProcureConn");
+    using (SqlConnection con = new SqlConnection(connStr))
+    {
+      con.Open();
+      SqlCommand cmd = new SqlCommand("SP_GetPRStatusSummary", con);
+      cmd.CommandType = CommandType.StoredProcedure;
+
+      using (SqlDataReader rd = cmd.ExecuteReader())
+      {
+        if (rd.Read())
+        {
+          result = new
+          {
+            open_pr = Convert.ToInt32(rd["open_pr"]),
+            closed_pr = Convert.ToInt32(rd["closed_pr"])
+          };
+        }
+      }
+    }
+
+    return Json(result);
+  }
+  [HttpGet]
+  public JsonResult GetPRDailyTrend()
+  {
+    var list = new List<object>();
+    IConfiguration config = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json")
+        .Build();
+    string connStr = config.GetConnectionString("BtProcureConn");
+    using (SqlConnection con = new SqlConnection(connStr))
+    {
+      con.Open();
+      SqlCommand cmd = new SqlCommand("SP_GetPRDailyTrend", con);
+      cmd.CommandType = CommandType.StoredProcedure;
+
+      using (SqlDataReader rd = cmd.ExecuteReader())
+      {
+        while (rd.Read())
+        {
+          list.Add(new
+          {
+            date = Convert.ToDateTime(rd["pr_date"]).ToString("yyyy-MM-dd"),
+            total = Convert.ToInt32(rd["total_pr"])
+          });
+        }
+      }
+    }
+
+    return Json(list);
+  }
+  [HttpGet]
+  public JsonResult GetPRMonthlySummary()
+  {
+    IConfiguration config = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json")
+        .Build();
+
+    string connStr = config.GetConnectionString("BtProcureConn");
+
+    var list = new List<object>();
+
+    using (SqlConnection con = new SqlConnection(connStr))
+    {
+      con.Open();
+      SqlCommand cmd = new SqlCommand("SP_GetPRMonthlySummary", con);
+      cmd.CommandType = CommandType.StoredProcedure;
+
+      using (SqlDataReader rd = cmd.ExecuteReader())
+      {
+        while (rd.Read())
+        {
+          list.Add(new
+          {
+            month_no = Convert.ToInt32(rd["month_no"]),
+            month_name = rd["month_name"].ToString(),
+            total_pr = Convert.ToInt32(rd["total_pr"])
+          });
+        }
+      }
+    }
+
+    return Json(list);
+  }
+  [HttpGet]
+  public JsonResult GetTopDepartment()
+  {
+    var list = new List<object>();
+    IConfiguration config = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json")
+        .Build();
+    string connStr = config.GetConnectionString("BtProcureConn");
+    using (SqlConnection con = new SqlConnection(connStr))
+    {
+      con.Open();
+      SqlCommand cmd = new SqlCommand("SP_GetTopDepartment", con);
+      cmd.CommandType = CommandType.StoredProcedure;
+
+      using (SqlDataReader rd = cmd.ExecuteReader())
+      {
+        while (rd.Read())
+        {
+          list.Add(new
+          {
+            dept = rd["reqDepCode"].ToString(),
+            total = Convert.ToInt32(rd["total_pr"])
+          });
+        }
+      }
+    }
+
+    return Json(list);
   }
   [HttpGet]
   public IActionResult GetAccCodeList(string? search)
@@ -1104,7 +1276,10 @@ public class CTLAdminController : Controller
     //  ViewData["OPENDOC"] = lstStr[0];
     //  ViewData["CLOSEDOC"] = lstStr[1];
     //}
+    string txtEMPCODE = HttpContext.Session.GetString(SessionModel.EMPCODE);
 
+    List<string> lstPending = daAccess.GetPendingApprove(txtEMPCODE);
+    ViewData["PENDING"] = lstPending[0];
     return View(VM);
   }
 
@@ -1618,6 +1793,11 @@ public class CTLAdminController : Controller
     {
       ViewData["UROLEADMIN"] = HttpContext.Session.GetString(SessionModel.UROLEADMIN);
     }
+
+    string txtEMPCODE = HttpContext.Session.GetString(SessionModel.EMPCODE);
+    List<string> lstPending = daAccess.GetPendingApprove(txtEMPCODE);
+    ViewData["PENDING"] = lstPending[0];
+
     return View();
   }
 

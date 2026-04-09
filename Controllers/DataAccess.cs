@@ -54,6 +54,42 @@ namespace AspnetCoreMvcFull.Controllers
           }
       return strMsg.ToList();
     }
+    public List<string> GetPendingApprove(string SAMACC)
+    {
+      string[] strMsg = new string[3];
+      IConfiguration _configuration = new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json")
+                        .Build();
+
+      string DBConn = _configuration[key: "ConnectionStrings:BtProcureConn"];
+      SqlConnection con = null;
+
+      try
+      {
+        con = new SqlConnection(DBConn);
+        con.Open();
+        SqlCommand cmnd = new SqlCommand("SP_CountPendingApprove", con);
+        cmnd.CommandType = CommandType.StoredProcedure;
+        cmnd.Parameters.AddWithValue("@emp_code", SqlDbType.VarChar).Value = SAMACC;
+        cmnd.Parameters.Add("@PendCount", SqlDbType.Int);
+        cmnd.Parameters["@PendCount"].Direction = ParameterDirection.Output;
+        cmnd.ExecuteNonQuery();
+        strMsg[0] = cmnd.Parameters["@PendCount"].Value.ToString();
+        con.Close();
+      }
+      catch (Exception ex)
+      {
+        strMsg[0] = "0";
+        strMsg[1] = "error";
+      }
+      finally
+      {
+        strMsg[1] = "success";
+        con.Close();
+      }
+      return strMsg.ToList();
+    }
     public List<string> GetUserLoginfo(string SAMACC)
     {
       string[] strMsg = new string[3];

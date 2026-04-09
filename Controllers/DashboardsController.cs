@@ -50,7 +50,7 @@ public class DashboardsController : Controller
     // Debug Mode Skip Authen
     /*
     string sUSERLOGON = "";
-    user = "BERNINATHAILAND\\chamaiporn.k"; //manu.m, Suriyothin.M, yuttaphum.p, Kitiphong.T, yannick.t, saowanee.s, kanit.c, Prasit.Y, Sompop.S, user = "BERNINATHAILAND\\nipaporn.u";
+    user = "BERNINATHAILAND\\martin.r"; //chamaiporn.k, manu.m, Suriyothin.M, yuttaphum.p, Kitiphong.T, yannick.t, saowanee.s, kanit.c, Prasit.Y, Sompop.S, user = "BERNINATHAILAND\\nipaporn.u";
     string[] arrSamName = user.Split(new char[] { '\\' });
     if (arrSamName.Length == 2)
     {
@@ -152,6 +152,11 @@ public class DashboardsController : Controller
     conpm.Close();
     //-- End Get User Permission
     string txtUser = HttpContext.Session.GetString(SessionModel.UROLEADMIN);
+
+    string txtEMPCODE = HttpContext.Session.GetString(SessionModel.EMPCODE);
+    List<string> lstPending = daAccess.GetPendingApprove(txtEMPCODE);
+    ViewData["PENDING"] = lstPending[0];
+
     return View();
   }
 
@@ -401,7 +406,17 @@ public class DashboardsController : Controller
               remarkAuth = reader["remarkAuth"].ToString() != "" ? reader["remarkAuth"].ToString() : "",
 
               purpose_type = (Int32)reader["purpose_type"],
-              projectno = reader["projectno"].ToString() != "" ? reader["projectno"].ToString() : ""
+              projectno = reader["projectno"].ToString() != "" ? reader["projectno"].ToString() : "",
+
+              appEmp = reader["appEmp"].ToString() != "" ? reader["appEmp"].ToString() : "",
+              appEmp2 = reader["appEmp2"].ToString() != "" ? reader["appEmp2"].ToString() : "",
+              countEmp = reader["countEmp"].ToString() != "" ? reader["countEmp"].ToString() : "",
+              authEmp = reader["authEmp"].ToString() != "" ? reader["authEmp"].ToString() : "",
+
+              appFlag = reader["appFlag"] != DBNull.Value ? (Int32)reader["appFlag"] : 0,
+              appFlag2 = reader["appFlag2"] != DBNull.Value ? (Int32)reader["appFlag2"] : 0,
+              countFlag = reader["countFlag"] != DBNull.Value ? (Int32)reader["countFlag"] : 0,
+              authFlag = reader["authFlag"] != DBNull.Value ? (Int32)reader["authFlag"] : 0
 
             });
           }
