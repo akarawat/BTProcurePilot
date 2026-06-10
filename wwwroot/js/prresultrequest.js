@@ -36,7 +36,7 @@ $(document).ready(function () {
         $("#id_projno").val(response.projectno);
         setDateInput('approx_dt', response.approx_dt);
 
-        if (response.approx_type == 1) {
+        if (response.approx_type == 3) {
           $("#rdoApprox").prop("checked", true);
         } else {
           $("#rdoApprox2").prop("checked", true);
