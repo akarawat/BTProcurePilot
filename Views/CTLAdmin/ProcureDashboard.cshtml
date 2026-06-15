@@ -2,172 +2,138 @@
     var isFullscreen = ViewData["isFullscreen"]?.ToString() == "true";
     var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
     var menuFixed = isFullscreen ? "" : "menu-fixed";
-    var isNavbar = isFullscreen ? false : true;
-    var isMenu = isFullscreen ? false : true;
+    var isNavbar = !isFullscreen;
+    var isMenu = !isFullscreen;
     var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
-    //ViewData["navbarHideToggle"] = true;
-    // *** No Menus ***
     ViewData["isMenu"] = isMenu;
     ViewData["menuFixed"] = menuFixed;
-    // *** No Navbar ***
     ViewData["isNavbar"] = isNavbar;
     ViewData["navbarType"] = navbarType;
-}
-@{
-  ViewData["Title"] = "Procurement Report";
-  // List<HRUserModel> useHr = new List<HRUserModel>();
-  // useHr = Model.VMHrUserModel;
+    ViewData["Title"] = "Procurement KPI dashboard";
 }
 
-@* ************** Content ************** *@
 @section PageStyles {
     <link href="~/css/datatables.min.css" rel="stylesheet" />
     <link href="~/css/datatables.css" rel="stylesheet" />
     <link href="~/css/usersetting.css" rel="stylesheet" />
+    <link href="~/css/bt-theme.css" rel="stylesheet" />
 }
 
-<!-- Start Dashboard -->
-
-<div class="container mt-4">
-
-    <h3 class="mb-4">📊 Procurement KPI Dashboard</h3>
-
-    <div class="row">
-
-        <!-- Total PR -->
-        <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3 shadow">
-                <div class="card-body text-center">
-                    <h5>Total PR</h5>
-                    <h2 id="total_pr">0</h2>
-                </div>
-            </div>
-        </div>
-
-        <!-- Open PR -->
-        <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3 shadow">
-                <div class="card-body text-center">
-                    <h5>Open PR</h5>
-                    <h2 id="open_pr">0</h2>
-                </div>
-            </div>
-        </div>
-
-        <!-- Closed PR -->
-        <div class="col-md-3">
-            <div class="card text-white bg-success mb-3 shadow">
-                <div class="card-body text-center">
-                    <h5>Closed PR</h5>
-                    <h2 id="closed_pr">0</h2>
-                </div>
-            </div>
-        </div>
-
-        <!-- Yield -->
-        <div class="col-md-3">
-            <div class="card text-white bg-info mb-3 shadow">
-                <div class="card-body text-center">
-                    <h5>Yield %</h5>
-                    <h2 id="yield_percent">0%</h2>
-                </div>
-            </div>
-        </div>
-
+<div class="card bt-card mb-4">
+    <div class="bt-page-header">
+        <h5><i class="ri-bar-chart-2-line"></i> @ViewData["Title"]</h5>
     </div>
-
-    <!-- Refresh Button -->
-    @* <div class="text-end">
-        <button class="btn btn-outline-primary btn-sm" id="btnRefresh">🔄 Refresh</button>
-    </div> *@
-
+    <div class="bt-form-panel">
+        <div class="row align-items-end">
+            <div class="col-md-3">
+                <label class="form-label" for="start_dt">Start date</label>
+                <input type="date" id="start_dt" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="end_dt">End date</label>
+                <input type="date" id="end_dt" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="filterDept">Department</label>
+                <select id="filterDept" class="form-select">
+                    <option value="">All departments</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button class="btn btn-bt-primary" id="btnSearch"><i class="ri-search-line"></i> Search</button>
+                <button class="btn btn-outline-secondary" id="btnClear">Clear</button>
+            </div>
+            <div class="col-md-3 text-end" style="display:none">
+                <button class="btn btn-success" id="btnExport"><i class="ri-download-2-line"></i> Export Excel</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="row mt-4">
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="card bt-card text-center h-100">
+            <div class="card-body">
+                <i class="ri-file-list-3-line ri-24px text-secondary"></i>
+                <div class="text-uppercase small text-secondary mt-2 mb-1">Total PR</div>
+                <h2 class="mb-0" id="total_pr">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bt-card text-center h-100">
+            <div class="card-body">
+                <i class="ri-time-line ri-24px" style="color:#854F0B"></i>
+                <div class="text-uppercase small text-secondary mt-2 mb-1">Open PR</div>
+                <h2 class="mb-0" id="open_pr" style="color:#854F0B">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bt-card text-center h-100">
+            <div class="card-body">
+                <i class="ri-checkbox-circle-line ri-24px" style="color:#3B6D11"></i>
+                <div class="text-uppercase small text-secondary mt-2 mb-1">Closed PR</div>
+                <h2 class="mb-0" id="closed_pr" style="color:#3B6D11">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bt-card text-center h-100">
+            <div class="card-body">
+                <i class="ri-percent-line ri-24px" id="yield_icon" style="color:var(--bt-primary)"></i>
+                <div class="text-uppercase small text-secondary mt-2 mb-1">Yield %</div>
+                <h2 class="mb-0" id="yield_percent" style="color:var(--bt-primary)">0%</h2>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- Monhtly -->
+<div class="row g-4 mt-1">
     <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header"><h5>📊 PR Monthly Summary (Jan–Dec)</h5></div>
+        <div class="card bt-card h-100">
+            <div class="card-header">PR monthly summary (Jan - Dec)</div>
             <div class="card-body">
                 <canvas id="prMonthlyChart" height="90"></canvas>
             </div>
         </div>
     </div>
-
-    <!-- Top Department -->
     <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header">Top Department</div>
+        <div class="card bt-card h-100">
+            <div class="card-header">Top department</div>
             <div class="card-body">
                 <canvas id="deptChart" height="100"></canvas>
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- Monthly End -->
-<div class="row mt-4">
-
-    <!-- Donut -->
+<div class="row g-4 mt-1">
     <div class="col-md-4">
-        <div class="card shadow">
-            <div class="card-header">Open vs Closed</div>
+        <div class="card bt-card h-100">
+            <div class="card-header">Open vs closed</div>
             <div class="card-body">
-                <canvas id="donutChart" ></canvas>
+                <canvas id="donutChart"></canvas>
             </div>
         </div>
     </div>
-
-    <!-- Line -->
     <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-header">PR Trend (By Days)</div>
+        <div class="card bt-card h-100">
+            <div class="card-header">PR trend (by days)</div>
             <div class="card-body">
                 <canvas id="lineChart" height="140"></canvas>
             </div>
         </div>
     </div>
-
 </div>
-<br />
-<div class="card mb-3 shadow">
-    <div class="card-body">
-        <div class="row align-items-end">
 
-            <div class="col-md-3">
-                <label>Start Date</label>
-                <input type="date" id="start_dt" class="form-control">
-            </div>
-
-            <div class="col-md-3">
-                <label>End Date</label>
-                <input type="date" id="end_dt" class="form-control">
-            </div>
-
-            <div class="col-md-3">
-                <button class="btn btn-primary" id="btnSearch">🔍 Search</button>
-                <button class="btn btn-secondary" id="btnClear">Clear</button>
-            </div>
-
-            <div class="col-md-3 text-end" style="display:none">
-                <button class="btn btn-success" id="btnExport">⬇ Export Excel</button>
-            </div>
-
-        </div>
-    </div>
-</div>
-<!-- /End Dashboard -->
-<!-- Users Basic Bootstrap Table -->
-<div class="layout-demo-info">
+<div class="layout-demo-info mt-4">
     <button class="btn btn-outline-secondary" id="toggleFullscreenBtn">
         <i class="bx bx-fullscreen"></i> @strCaption
     </button>
 </div>
 
 @section PageScripts {
-    
     <script src="~/js/jquery.js"></script>
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/datatables.js"></script>
@@ -178,4 +144,3 @@
     <script src="~/js/xlsx.full.min.js"></script>
     <script src="~/js/jszip.min.js"></script>
 }
-

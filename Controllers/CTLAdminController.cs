@@ -115,7 +115,7 @@ public class CTLAdminController : Controller
     return View();
   }
   [HttpGet]
-  public JsonResult GetPRSummaryKPI(string start_dt, string end_dt)
+  public JsonResult GetPRSummaryKPI(string start_dt, string end_dt, string dept)
   {
     IConfiguration config = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
@@ -135,6 +135,7 @@ public class CTLAdminController : Controller
       cmd.CommandType = CommandType.StoredProcedure;
       cmd.Parameters.Add(new SqlParameter("@start_dt", SqlDbType.DateTime) { Value = (object)start ?? DBNull.Value });
       cmd.Parameters.Add(new SqlParameter("@end_dt", SqlDbType.DateTime) { Value = (object)end ?? DBNull.Value });
+      cmd.Parameters.Add(new SqlParameter("@dept", SqlDbType.NVarChar, 50) { Value = string.IsNullOrEmpty(dept) ? (object)DBNull.Value : dept });
 
       using (SqlDataReader rd = cmd.ExecuteReader())
       {
@@ -151,7 +152,7 @@ public class CTLAdminController : Controller
     return Json(result);
   }
   [HttpGet]
-  public JsonResult GetPRStatusSummary(string start_dt, string end_dt)
+  public JsonResult GetPRStatusSummary(string start_dt, string end_dt, string dept)
   {
     var result = new { open_pr = 0, closed_pr = 0 };
     DateTime? start = string.IsNullOrEmpty(start_dt) ? null : Convert.ToDateTime(start_dt);
@@ -169,6 +170,7 @@ public class CTLAdminController : Controller
       cmd.CommandType = CommandType.StoredProcedure;
       cmd.Parameters.Add(new SqlParameter("@start_dt", SqlDbType.DateTime) { Value = (object)start ?? DBNull.Value });
       cmd.Parameters.Add(new SqlParameter("@end_dt", SqlDbType.DateTime) { Value = (object)end ?? DBNull.Value });
+      cmd.Parameters.Add(new SqlParameter("@dept", SqlDbType.NVarChar, 50) { Value = string.IsNullOrEmpty(dept) ? (object)DBNull.Value : dept });
 
       using (SqlDataReader rd = cmd.ExecuteReader())
       {
@@ -186,7 +188,7 @@ public class CTLAdminController : Controller
     return Json(result);
   }
   [HttpGet]
-  public JsonResult GetPRDailyTrend(string start_dt, string end_dt)
+  public JsonResult GetPRDailyTrend(string start_dt, string end_dt, string dept)
   {
     var list = new List<object>();
     DateTime? start = string.IsNullOrEmpty(start_dt) ? null : Convert.ToDateTime(start_dt);
@@ -204,6 +206,7 @@ public class CTLAdminController : Controller
       cmd.CommandType = CommandType.StoredProcedure;
       cmd.Parameters.Add(new SqlParameter("@start_dt", SqlDbType.DateTime) { Value = (object)start ?? DBNull.Value });
       cmd.Parameters.Add(new SqlParameter("@end_dt", SqlDbType.DateTime) { Value = (object)end ?? DBNull.Value });
+      cmd.Parameters.Add(new SqlParameter("@dept", SqlDbType.NVarChar, 50) { Value = string.IsNullOrEmpty(dept) ? (object)DBNull.Value : dept });
 
       using (SqlDataReader rd = cmd.ExecuteReader())
       {
@@ -221,7 +224,7 @@ public class CTLAdminController : Controller
     return Json(list);
   }
   [HttpGet]
-  public JsonResult GetPRMonthlySummary(string start_dt, string end_dt)
+  public JsonResult GetPRMonthlySummary(string start_dt, string end_dt, string dept)
   {
     IConfiguration config = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
@@ -241,6 +244,7 @@ public class CTLAdminController : Controller
       cmd.CommandType = CommandType.StoredProcedure;
       cmd.Parameters.Add(new SqlParameter("@start_dt", SqlDbType.DateTime) { Value = (object)start ?? DBNull.Value });
       cmd.Parameters.Add(new SqlParameter("@end_dt", SqlDbType.DateTime) { Value = (object)end ?? DBNull.Value });
+      cmd.Parameters.Add(new SqlParameter("@dept", SqlDbType.NVarChar, 50) { Value = string.IsNullOrEmpty(dept) ? (object)DBNull.Value : dept });
 
       using (SqlDataReader rd = cmd.ExecuteReader())
       {
@@ -259,7 +263,7 @@ public class CTLAdminController : Controller
     return Json(list);
   }
   [HttpGet]
-  public JsonResult GetTopDepartment(string start_dt, string end_dt)
+  public JsonResult GetTopDepartment(string start_dt, string end_dt, string dept)
   {
     var list = new List<object>();
     DateTime? start = string.IsNullOrEmpty(start_dt) ? null : Convert.ToDateTime(start_dt);
@@ -277,6 +281,7 @@ public class CTLAdminController : Controller
       cmd.CommandType = CommandType.StoredProcedure;
       cmd.Parameters.Add(new SqlParameter("@start_dt", SqlDbType.DateTime) { Value = (object)start ?? DBNull.Value });
       cmd.Parameters.Add(new SqlParameter("@end_dt", SqlDbType.DateTime) { Value = (object)end ?? DBNull.Value });
+      cmd.Parameters.Add(new SqlParameter("@dept", SqlDbType.NVarChar, 50) { Value = string.IsNullOrEmpty(dept) ? (object)DBNull.Value : dept });
 
       using (SqlDataReader rd = cmd.ExecuteReader())
       {

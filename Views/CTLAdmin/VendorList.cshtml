@@ -1,55 +1,46 @@
 @{
-  ViewData["Title"] = "Vendor List";
+    ViewData["Title"] = "Vendor configuration";
 }
 
-@* ************** Content ************** *@
 @section PageStyles {
     <link href="~/css/datatables.min.css" rel="stylesheet" />
     <link href="~/css/datatables.css" rel="stylesheet" />
     <link href="~/css/vendorlist.css" rel="stylesheet" />
+    <link href="~/css/bt-theme.css" rel="stylesheet" />
 }
-<!-- Start Basic Bootstrap Table -->
-<div class="card">
-    <div class="table-responsive text-nowrap">
-        <div class="container">
-            <div class="row card-header">
-                <div class="col-sm-2 align-self-start">
-                    <h5 class="card-header">[Vendor Setting]</h5>
-                    <input type="hidden" id="adminRole" value="@ViewData["UROLEADMIN"]" />
-                </div>
-                <div class="col-sm-10 align-self-end" id="spanAdmin" style="display:none">
-                    <div class="d-flex justify-content-end">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <input class="form-control" type="text" id="VenCode" placeholder="Vendor Code" />
-                                <input class="form-control" type="text" id="VenName" placeholder="Vendor Name" />
-                                <input class="form-control" type="hidden" id="VenCodeTmp" />
-                            </div>
-                            <div class="col-md-5">
-                                <input class="form-control" type="text" id="Vencurrency" placeholder="Currency" />
-                            </div>
-                            <div class="col-md-2">
-                                <button class="btn btn-info" type="button" id="btnSubmit">Add +</button>
-                                <div class="row">
-                                    <div class="col-md-6 text-center">
-                                        <p class="text-center"><i id="btnVenEdit" class="ri-save-3-fill text-success" onclick="javascript:SaveEditVen();" style="cursor:pointer; font-size: 24px; display:none" title='Edit'></i></p>
-                                    </div>
-                                    <div class="col-md-6 text-center">
-                                        <p class="text-center"><i id="btnVenDel" class="ri-delete-bin-2-fill text-danger" onclick="javascript:DeleteVen();" style="cursor:pointer; font-size: 24px; display:none" title='Delete'></i></p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                    </div>
+
+<div class="card bt-card mb-4">
+    <div class="bt-page-header">
+        <h5><i class="ri-store-2-line"></i> @ViewData["Title"]</h5>
+        <input type="hidden" id="adminRole" value="@ViewData["UROLEADMIN"]" />
+    </div>
+
+    <div class="bt-form-panel" id="spanAdmin" style="display:none">
+        <div class="bt-form-panel-label">Add / edit vendor</div>
+        <div class="row">
+            <div class="col-md-3">
+                <input class="form-control" type="hidden" id="VenCodeTmp" />
+                <input class="form-control" type="text" id="VenCode" placeholder="Vendor Code" />
+            </div>
+            <div class="col-md-4">
+                <input class="form-control" type="text" id="VenName" placeholder="Vendor Name" />
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" id="Vencurrency" placeholder="Currency" />
+            </div>
+            <div class="col-md-2 d-flex align-items-center gap-3">
+                <button class="btn btn-bt-primary" type="button" id="btnSubmit">Add +</button>
+                <div class="bt-action-icons">
+                    <i id="btnVenEdit" class="ri-save-3-fill text-success" onclick="javascript:SaveEditVen();" style="display:none" title="Edit"></i>
+                    <i id="btnVenDel" class="ri-delete-bin-2-fill text-danger" onclick="javascript:DeleteVen();" style="display:none" title="Delete"></i>
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="table-responsive text-nowrap">
         <table id="bindDataTable" class="table table-hover" width="100%">
-            <caption>
-                Vendor Configuration
-            </caption>
+            <caption class="visually-hidden">Vendor configuration</caption>
             <thead>
                 <tr>
                     <th>Vendor Name</th>
@@ -72,18 +63,15 @@
                 </tr>
             </tfoot>
         </table>
-
     </div>
 </div>
-<!-- Users Basic Bootstrap Table -->
-<hr class="my-12">
-<!-- Modal Warning-->
+
+<!-- User permission warning modal -->
 <div class="modal fade" id="modalAuth" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="authwarning" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title text-danger" id="authwarning">User Permission</h5>
-                @* <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
             </div>
             <div class="modal-body">
                 You don't have this permission
@@ -96,14 +84,9 @@
 </div>
 
 @section PageScripts {
-    @* <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script> *@
-
     <script src="~/js/jquery.js"></script>
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/datatables.js"></script>
     <script src="~/js/datatables.min.js"></script>
-
     <script src="~/js/vendorlist.js"></script>
 }
-

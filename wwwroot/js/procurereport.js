@@ -1,10 +1,36 @@
 $(document).ready(function () {
 
+  fetch('/CTLAdmin/GetAllPRData').then(r => r.json()).then(d => {
+    const data = d.data;
+    console.log("Total rows:", data.length);
+
+    // นับตาม prstatus_txt
+    const byStatus = {};
+    data.forEach(r => { byStatus[r.prstatus_txt] = (byStatus[r.prstatus_txt] || 0) + 1; });
+    console.log("--- by prstatus_txt ---");
+    console.table(byStatus);
+
+    // นับ rows ที่มี field ใดๆ ใน 4 ตัวนี้ = "Pending"
+    const pendingApprover = data.filter(r =>
+      r.appEmp_txt === "Pending" || r.appEmp2_txt === "Pending" ||
+      r.countFlag_txt === "Pending" || r.authEmp_txt === "Pending"
+    );
+    console.log("Rows with any approver = 'Pending':", pendingApprover.length);
+
+    // ตัวอย่าง 5 แถวแรกของ pendingApprover เพื่อดู prstatus_txt คู่กัน
+    console.log("--- sample pendingApprover rows ---");
+    console.table(pendingApprover.slice(0, 10).map(r => ({
+      prno: r.prno, prstatus_txt: r.prstatus_txt, codelog: r.codelog,
+      appEmp_txt: r.appEmp_txt, appEmp2_txt: r.appEmp2_txt,
+      countFlag_txt: r.countFlag_txt, authEmp_txt: r.authEmp_txt
+    })));
+  });
+
   $('#bindDataTable').DataTable({
     ajax: {
       url: '/CTLAdmin/GetAllPRData',
       dataSrc: function (json) {
-        console.log("Full JSON Response:", json); // This works perfectly here
+        //console.log("Full JSON Response:", json); // This works perfectly here
         return json.data;
       }
     },
@@ -83,7 +109,7 @@ $(document).ready(function () {
   $("#id_lbl_procure_rec").html("PROCUREMENT RECEIVED ");
 
 
-  $("#id_lbl_all_pr").html("ALL PR.");
+  $("#id_lbl_all_pr").html("PR. INCOMPLETE");
   $("#id_lbl_completed").html("PR. COMPLETED");
   $("#id_lbl_rfq").html("ALL RFQ. ");
   let lbl_perc = 0;

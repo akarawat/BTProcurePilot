@@ -13,6 +13,31 @@ $(document).ready(function () {
   loadDonutChart();
   loadLineChart();
   loadDeptChart();
+
+  // Populate the Department dropdown from all PR records (same source
+  // used by ProcureReport's department filter).
+  $.get('/CTLAdmin/GetAllPRData', function (json) {
+    if (!json || !json.data) {
+      return;
+    }
+    var depts = [];
+    json.data.forEach(function (row) {
+      var dep = row.reqDepCode ? String(row.reqDepCode) : '';
+      if (dep !== '' && depts.indexOf(dep) === -1) {
+        depts.push(dep);
+      }
+    });
+    depts.sort();
+
+    var $sel = $('#filterDept');
+    depts.forEach(function (dep) {
+      $sel.append('<option value="' + dep + '">' + dep + '</option>');
+    });
+  });
+
+  $('#filterDept').on('change', function () {
+    reloadAll();
+  });
 });
 function startAutoRefresh() {
   interval = setInterval(function () {
@@ -37,6 +62,16 @@ function loadDashboard() {
       $("#open_pr").text(res.open_pr);
       $("#closed_pr").text(res.closed_pr);
       $("#yield_percent").text(res.yield_percent + " %");
+
+      let yieldColor;
+      if (res.yield_percent < 90) {
+        yieldColor = '#A32D2D'; // red
+      } else if (res.yield_percent <= 97) {
+        yieldColor = '#854F0B'; // amber/yellow
+      } else {
+        yieldColor = '#3B6D11'; // green
+      }
+      $("#yield_percent, #yield_icon").css('color', yieldColor);
 
     },
     error: function () {
@@ -98,7 +133,8 @@ function loadDonutChart() {
       data: {
         labels: ["Open", "Closed"],
         datasets: [{
-          data: [res.open_pr, res.closed_pr]
+          data: [res.open_pr, res.closed_pr],
+          backgroundColor: ['#EF9F27', '#639922']
         }]
       },
       options: {
@@ -200,12 +236,14 @@ $("#btnSearch").click(function () {
 $("#btnClear").click(function () {
   $("#start_dt").val('');
   $("#end_dt").val('');
+  $("#filterDept").val('');
   reloadAll();
 });
 function getFilter() {
   return {
     start_dt: $("#start_dt").val(),
-    end_dt: $("#end_dt").val()
+    end_dt: $("#end_dt").val(),
+    dept: $("#filterDept").val()
   };
 }
 function reloadAll() {
@@ -224,7 +262,7 @@ async function exportDashboard() {
 
   let filter = getFilter();
 
-  const res = await fetch(`/CTLAdmin/GetPRMonthlySummary?start_dt=${filter.start_dt}&end_dt=${filter.end_dt}`);
+  const res = await fetch(`/CTLAdmin/GetPRMonthlySummary?start_dt=${filter.start_dt}&end_dt=${filter.end_dt}&dept=${filter.dept}`);
   const data = await res.json();
 
   let rows = [];

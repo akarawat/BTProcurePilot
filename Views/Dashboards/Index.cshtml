@@ -1,98 +1,60 @@
 @{
     ViewData["Title"] = "BT Procure PR.Online";
-
 }
 
 @section VendorStyles {
-<link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" />
-<link href="~/css/site.css" rel="stylesheet" />
-}
-
-@section VendorScripts {
-@* <script src="~/vendor/libs/apex-charts/apexcharts.js"></script> *@
+    <link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" />
+    <link href="~/css/site.css" rel="stylesheet" />
+    <link href="~/css/bt-theme.css" rel="stylesheet" />
 }
 
 @section PageScripts {
-@* <script src="~/js/dashboards-analytics.js"></script> *@
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <script src="~/js/datatables.js"></script>
     <script src="~/js/datatables.min.js"></script>
     <script src="~/js/index-dashboard.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
-
-    @*     <script src="~/js/xlsx.full.min.js"></script>
-    <script src="~/js/jszip.min.js"></script>
- *@
-
 }
 
-@* ************** Content ************** *@
-<div class="row gy-12">
-    <!-- Col 1 card -->
-    <div class="col-md-12 col-lg-12">
-        <div class="card">
-            <div class="card-body text-nowrap">
-                <h5 class="card-title mb-0 flex-wrap text-nowrap text-end">MY REQUEST</h5>
-                <p class="mb-2">
-                  <span id="cntDraft"></span> Draft,
-                  <span id="cntActive"></span> Active,
-                  <span id="cntApproved"></span> Completed
-                </p>
-                <!-- Start Table -->
-                <div class="table-responsive text-nowrap">
-                    <table id="bindDataTable" class="table table-hover" width="100%">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="col-hidden" style="display:none"></th>
-                                <th>PR Information</th>
-                                <th>PO Information</th>
-                                <th>Remarks</th>
-                            </tr>
-                        </thead>
-                    </table>
-
-                </div>
-                <!-- /End Table -->
-            </div>
+<div class="card bt-card mb-4">
+    <div class="bt-page-header">
+        <h5><i class="ri-file-list-3-line"></i> My request</h5>
+        <div class="bt-page-header-tag">
+            <span id="cntDraft">0</span> draft &middot;
+            <span id="cntActive">0</span> active &middot;
+            <span id="cntApproved">0</span> completed
         </div>
     </div>
-    <!--/ Col 1 card -->
+    <div class="table-responsive text-nowrap">
+        <table id="bindDataTable" class="table table-hover" width="100%">
+            <thead class="table-light">
+                <tr>
+                    <th class="col-hidden" style="display:none"></th>
+                    <th>PR Information</th>
+                    <th>PO Information</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
 </div>
-<br/>
-<div class="row gy-12">
-    <!-- Col 2 card -->
-    <div class="col-md-12 col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                  <div class="col-12">
-                        <h5 class="text-end">MY APPROVE</h5>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-12">
-                        <!-- Start Table -->
-                        <div class="table-responsive text-nowrap">
-                            <table id="bindDataTableApproval" class="table table-hover my-custom-table" width="100%">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th class="col-hidden" style="display:none"></th>
-                                        <th>PR Information</th>
-                                        <th>PO Information</th>
-                                        <th>Remarks</th>
-                                        <th>Approval Status</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                        <!-- /End Table -->
-                    </div>
-                </div>
-                
-            </div>
-        </div>
+
+<div class="card bt-card mb-4">
+    <div class="bt-page-header">
+        <h5><i class="ri-checkbox-circle-line"></i> My approve</h5>
     </div>
-    <!--/ Col 2 card -->
+    <div class="table-responsive text-nowrap">
+        <table id="bindDataTableApproval" class="table table-hover my-custom-table" width="100%">
+            <thead class="table-light">
+                <tr>
+                    <th class="col-hidden" style="display:none"></th>
+                    <th>PR Information</th>
+                    <th>PO Information</th>
+                    <th>Remarks</th>
+                    <th>Approval Status</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
 </div>

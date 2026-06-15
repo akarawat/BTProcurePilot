@@ -199,6 +199,12 @@ function SavePRHeader(flag) {
       if (!stsAppEmp && mailApp == "") {
         alert("❌ Please select approval"); return;
       }
+
+      if ($("#prcurrency").val() == '') {
+        alert("❌ Plaese input PR Currency. \n กำหนดสกุลเงินที่จะใช้");
+        $("#prcurrency").focus();
+        return;
+      }
     }
 
     if (valCountEmp != undefined) {
@@ -255,6 +261,8 @@ function SavePRHeader(flag) {
   console.log("Final App:", empApp, ':', empCount, ':', empAuth);
   let rfq = $("input[name='rdoPurpose']:checked").val();
   console.log(rfq);
+
+
   if (empApp != undefined) {
     if (empApp.trim() == $("#empCode").val().trim()) {
       if (empApp.trim() == 'S03434' || empApp.trim() == 'S01371') {

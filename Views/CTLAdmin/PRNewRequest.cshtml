@@ -2,32 +2,20 @@
     var isFullscreen = ViewData["isFullscreen"]?.ToString() == "true";
     var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
     var menuFixed = isFullscreen ? "" : "menu-fixed";
-    var isNavbar = isFullscreen ? false : true;
-    var isMenu = isFullscreen ? false : true;
+    var isNavbar = !isFullscreen;
+    var isMenu = !isFullscreen;
     var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
-    //ViewData["navbarHideToggle"] = true;
-    // *** No Menus ***
     ViewData["isMenu"] = isMenu;
     ViewData["menuFixed"] = menuFixed;
-    // *** No Navbar ***
     ViewData["isNavbar"] = isNavbar;
     ViewData["navbarType"] = navbarType;
 }
 @{
     List<ProcureUserModel> modelProcure = Model.VMProcureUserModel ?? new List<ProcureUserModel>();
-    modelProcure = Model.VMProcureUserModel;
-
     List<VenModel> modelVen = Model.VMVenModel ?? new List<VenModel>();
-    modelVen = Model.VMVenModel;
-
     List<ProjModel> modelProj = Model.VMProjModel ?? new List<ProjModel>();
-    modelProj = Model.VMProjModel;
-
     List<AccModel> modelAcc = Model.VMAccModel ?? new List<AccModel>();
-    modelAcc = Model.VMAccModel;
-
     List<CurrencyModel> modelCurrency = Model.VMCurrencyModel ?? new List<CurrencyModel>();
-    modelCurrency = Model.VMCurrencyModel;
 
     ViewData["Title"] = "New Purchase Request";
     string sDOC_NUMBER = ViewData["DOC_NUMBER"]?.ToString() ?? string.Empty;
@@ -36,435 +24,378 @@
     string sUEMAIL = Context.Session.GetString(SessionModel.UEMAIL) ?? string.Empty;
 }
 
-@* ************** Content ************** *@
 @section PageStyles {
     <link href="~/css/datatables.min.css" rel="stylesheet" />
     <link href="~/css/datatables.css" rel="stylesheet" />
     <link href="~/css/prnewrequest.css" rel="stylesheet" />
+    <link href="~/css/bt-theme.css" rel="stylesheet" />
 }
 
 <form method="post">
-    <div class="row">
-        <!-- Approx require -->
-        <div class="col-md-8 mb-3">
-          <h4 class="mb-3 text-center">Purchase Request Form (New Request)</h4>
+    <div class="card bt-card mb-4">
+        <div class="bt-page-header">
+            <h5><i class="ri-file-add-line"></i> New purchase request</h5>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="form-check">
-                <input type="text" class="form-control form-control-sm border-danger" name="prno" id="prno" value="@sDOC_NUMBER" placeholder="PR Number (Auto running No.)" disabled>
-                <input type="hidden" name="prno_draft" id="prno_draft" value="@sDOC_NUMBER" />
-                <input type="hidden" name="empCode" id="empCode" value="@sEMPCODE" />
-                <input type="hidden" name="reqDepCode" id="reqDepCode" value="@sDEPCODE" />
-                <input type="hidden" name="prcurrency" id="prcurrency" />
-            </div>
-            <div class="form-check">
-                <label for="id_projno" class="form-label">Project Number</label>
-                <input class="form-control custom-number-btinfo" list="opt_projno" id="id_projno" name="id_projno" placeholder="Project Number" autocomplete="off">
-                <datalist name="opt_projno" id="opt_projno">
-                    @{
-                        if (modelProj != null)
-                        {
-                            foreach (var rowProj in modelProj)
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3 ms-auto">
+                    <div class="form-check">
+                        <input type="text" class="form-control form-control-sm border-danger" name="prno" id="prno" value="@sDOC_NUMBER" placeholder="PR Number (Auto running No.)" disabled>
+                        <input type="hidden" name="prno_draft" id="prno_draft" value="@sDOC_NUMBER" />
+                        <input type="hidden" name="empCode" id="empCode" value="@sEMPCODE" />
+                        <input type="hidden" name="reqDepCode" id="reqDepCode" value="@sDEPCODE" />
+                        <input type="hidden" name="prcurrency" id="prcurrency" />
+                    </div>
+                    <div class="form-check">
+                        <label for="id_projno" class="form-label">Project Number</label>
+                        <input class="form-control custom-number-btinfo" list="opt_projno" id="id_projno" name="id_projno" placeholder="Project Number" autocomplete="off">
+                        <datalist name="opt_projno" id="opt_projno">
+                            @foreach (var rowProj in modelProj)
                             {
                                 <option value="@rowProj.ProjNo">@rowProj.ProjName</option>
                             }
-                        }
-                    }
-                </datalist>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <!-- Approx require -->
-        <div class="col-md-4 mb-3"></div>
-        <div class="col-md-4 mb-3">
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="rdoApprox" id="rdoApprox" value="3">
-                <label class="form-check-label" for="rdoApprox">Urgent-PO issue after receive PR 3 working days</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="rdoApprox" id="rdoApprox2" value="1">
-                <label class="form-check-label" for="rdoApprox2">Normal-PO issue after receive PR 10 working days</label>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="form-check">
-                <label class="form-check-label text-danger" for="approx_dt">Require delivery date</label>
-                <input type="date" class="form-control form-control-sm" name="approx_dt" id="approx_dt">
-            </div>
-            <div class="form-check">
-                <input type="text" class="form-control form-control-sm" name="InvNo" id="InvNo"
-                placeholder="Investment request / Credit request No.">
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <!-- Purpose -->
-        <div class="col-md-4 mb-3">
-            <label class="form-label fw-bold">Purpose:</label>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="rdoPurpose" id="rdoPurpose1" value="1" checked="checked" >
-                <label class="form-check-label" for="rdoPurpose1">Order external 365 system</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="rdoPurpose" id="rdoPurpose2" value="2" >
-                <label class="form-check-label" for="rdoPurpose2">Order in the 365 system</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="rdoPurpose" id="rdoPurpose3" value="3" >
-                <label class="form-check-label" for="rdoPurpose3">Request quotation only</label>
-            </div>
-        </div>
-
-        <!-- Reference -->
-        <div class="col-md-4 mb-3">
-          <div class="row">
-              <div class="mb-3">
-                <label class="form-label fw-bold">Reference:</label>
-                <input type="text" class="form-control" name="reference" id="reference" placeholder="Change No. / NCR No. / WO No. / Work Permit No.">
-              </div>
-                <!-- Reason to order -->
-              <div class="mb-3">
-                  <label class="form-label fw-bold text-danger">* Reason to order:</label>
-                  <textarea class="form-control" name="reason" id="reason"  rows="2"></textarea>
-              </div>
-            </div>
-        </div>
-
-        <!-- Area for purchaser -->
-        <div class="col-md-4 mb-3">
-            <div class="border p-2 border-warning text-warning">
-                <strong>Area for purchaser use only</strong>
-                <div class="mb-2">
-                    <label class="form-label small">PR Received date</label>
-                    <input type="date" class="form-control form-control-sm" name="prReceivedDate" disabled="disabled">
-                </div>
-                <div>
-                    <label class="form-label small">PO Number</label>
-                    <input type="text" class="form-control form-control-sm" name="poNumber" disabled="disabled">
+                        </datalist>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <!-- Start Suggest Supplier 1 -->
-    <div class="card" id="card-supp1" style="display:none">
-      <h5 class="card-header">Suggested Supplier</h5>
-      <div class="card-body">
-          <div class="row mb-3 bg-transparent">
-              <div class="col-md-3 border-warning">
-                  <input class="form-control custom-number-btinfo" list="opt_supp1" id="id_supp1" name="id_supp1" placeholder="Select Supplier">
-                  <datalist name="opt_supp1" id="opt_supp1">
-                      @{
-                            if (modelVen != null)
-                            {
-                                foreach (var rowVen in modelVen)
+            <div class="row">
+                <!-- Approx require -->
+                <div class="col-md-4 mb-3"></div>
+                <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rdoApprox" id="rdoApprox" value="3">
+                        <label class="form-check-label" for="rdoApprox">Urgent-PO issue after receive PR 3 working days</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rdoApprox" id="rdoApprox2" value="1">
+                        <label class="form-check-label" for="rdoApprox2">Normal-PO issue after receive PR 10 working days</label>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <label class="form-check-label text-danger" for="approx_dt">Require delivery date</label>
+                        <input type="date" class="form-control form-control-sm" name="approx_dt" id="approx_dt">
+                    </div>
+                    <div class="form-check">
+                        <input type="text" class="form-control form-control-sm" name="InvNo" id="InvNo"
+                               placeholder="Investment request / Credit request No.">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Purpose -->
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Purpose:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rdoPurpose" id="rdoPurpose1" value="1" checked="checked">
+                        <label class="form-check-label" for="rdoPurpose1">Order external 365 system</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rdoPurpose" id="rdoPurpose2" value="2">
+                        <label class="form-check-label" for="rdoPurpose2">Order in the 365 system</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rdoPurpose" id="rdoPurpose3" value="3">
+                        <label class="form-check-label" for="rdoPurpose3">Request quotation only</label>
+                    </div>
+                </div>
+
+                <!-- Reference -->
+                <div class="col-md-4 mb-3">
+                    <div class="row">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Reference:</label>
+                            <input type="text" class="form-control" name="reference" id="reference" placeholder="Change No. / NCR No. / WO No. / Work Permit No.">
+                        </div>
+                        <!-- Reason to order -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-danger">* Reason to order:</label>
+                            <textarea class="form-control" name="reason" id="reason" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Area for purchaser -->
+                <div class="col-md-4 mb-3">
+                    <div class="border p-2 border-warning text-warning">
+                        <strong>Area for purchaser use only</strong>
+                        <div class="mb-2">
+                            <label class="form-label small">PR Received date</label>
+                            <input type="date" class="form-control form-control-sm" name="prReceivedDate" disabled="disabled">
+                        </div>
+                        <div>
+                            <label class="form-label small">PO Number</label>
+                            <input type="text" class="form-control form-control-sm" name="poNumber" disabled="disabled">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Start Suggest Supplier 1 -->
+            <div class="card bt-card" id="card-supp1" style="display:none">
+                <h5 class="bt-subcard-header"><i class="ri-truck-line"></i> Suggested supplier</h5>
+                <div class="card-body">
+                    <div class="row mb-3 bg-transparent">
+                        <div class="col-md-3 border-warning">
+                            <input class="form-control custom-number-btinfo" list="opt_supp1" id="id_supp1" name="id_supp1" placeholder="Select Supplier">
+                            <datalist name="opt_supp1" id="opt_supp1">
+                                @foreach (var rowVen in modelVen)
                                 {
                                     <option value="@rowVen.VenCode">[@rowVen.Vencurrency] @rowVen.VenName</option>
                                 }
-                            }
-                        }
-                    </datalist>
-              </div>
+                            </datalist>
+                        </div>
 
-              <div class="col-md-5">
-                    <input type="text" class="form-control bg-transparent" name="name_supp1" id="name_supp1" placeholder="Supplier name (Option)">
-                </div>
-                <div class="col-md-2">
-                    
-                </div>
-                <div class="col-md-2">
-                    <p class="text-end"><button class="btn btn-secondary" type="button" id="clearSupplier" onclick="EmptySupplierData(1)">Clear</button></p>
-                </div>
-          </div>
-          <div class="row mb-3 bg-transparent">
-              <div class="col-md-3">
-                    <input type="text" class="form-control bg-transparent" name="vc_supp1" id="vc_supp1" placeholder="V/C" style="display:none">
-                    <input type="text" class="form-control" name="contact_supp1" id="contact_supp1" placeholder="Contact">
-              </div>
-                <div class="col-md-5">
-                    <input type="email" class="form-control" name="email_supp1" id="email_supp1" placeholder="E-Mail">
-              </div>
-                <div class="col-md-4">
-                    <input type="text" class="form-control" name="tel_supp1" id="tel_supp1" placeholder="Tel/Fax.">
-              </div>
-          </div>
-          <div class="row mb-3">
-                  <div class="col-md-12">
-                    <input type="text" class="form-control" name="remark_supp1" id="remark_supp1" placeholder="Remark.">
-                    <input type="text" class="form-control" name="quoref_supp1" id="quoref_supp1" placeholder="Ref Quotation No." style="display:none">
-                    <div class="form-floating form-floating-outline mb-6" style="display:none">
-                        <input class="form-control" type="date" id="refnodt_supp1" />
-                        <label for="refnodt_supp1">Ref. Date</label>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control bg-transparent" name="name_supp1" id="name_supp1" placeholder="Supplier name (Option)">
+                        </div>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                            <p class="text-end"><button class="btn btn-secondary" type="button" id="clearSupplier1" onclick="EmptySupplierData(1)">Clear</button></p>
+                        </div>
                     </div>
+                    <div class="row mb-3 bg-transparent">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control bg-transparent" name="vc_supp1" id="vc_supp1" placeholder="V/C" style="display:none">
+                            <input type="text" class="form-control" name="contact_supp1" id="contact_supp1" placeholder="Contact">
+                        </div>
+                        <div class="col-md-5">
+                            <input type="email" class="form-control" name="email_supp1" id="email_supp1" placeholder="E-Mail">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="tel_supp1" id="tel_supp1" placeholder="Tel/Fax.">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" name="remark_supp1" id="remark_supp1" placeholder="Remark.">
+                            <input type="text" class="form-control" name="quoref_supp1" id="quoref_supp1" placeholder="Ref Quotation No." style="display:none">
+                            <div class="form-floating form-floating-outline mb-6" style="display:none">
+                                <input class="form-control" type="date" id="refnodt_supp1" />
+                                <label for="refnodt_supp1">Ref. Date</label>
+                            </div>
 
+                        </div>
+                    </div>
                 </div>
-                  @* <div class="col-md-3">
-                  </div>
-
-                  <div class="col-md-3">
-              </div> *@
-          </div>
-      </div>
-    </div>
-    <!-- /End Suggest Supplier 1 -->
-    <br />
-    <!-- Start Suggest Supplier 2 -->
-    <div class="card" id="card-supp2" style="display:none">
-      <h5 class="card-header">Suggested Supplier 2</h5>
-        <div class="card-body">
-            <div class="row mb-3 bg-transparent">
-                <div class="col-md-3 border-warning">
-                    <input class="form-control custom-number-btinfo" list="opt_supp2" id="id_supp2" name="id_supp2" placeholder="Select Supplier">
-                    <datalist name="opt_supp2" id="opt_supp2">
-                        @{
-                            if (modelVen != null)
-                            {
-                                foreach (var rowVen in modelVen)
+            </div>
+            <!-- /End Suggest Supplier 1 -->
+            <br />
+            <!-- Start Suggest Supplier 2 -->
+            <div class="card bt-card" id="card-supp2" style="display:none">
+                <h5 class="bt-subcard-header"><i class="ri-truck-line"></i> Suggested supplier 2</h5>
+                <div class="card-body">
+                    <div class="row mb-3 bg-transparent">
+                        <div class="col-md-3 border-warning">
+                            <input class="form-control custom-number-btinfo" list="opt_supp2" id="id_supp2" name="id_supp2" placeholder="Select Supplier">
+                            <datalist name="opt_supp2" id="opt_supp2">
+                                @foreach (var rowVen in modelVen)
                                 {
                                     <option value="@rowVen.VenCode">[@rowVen.Vencurrency] @rowVen.VenName</option>
                                 }
-                            }
-                        }
-                    </datalist>
-                </div>
+                            </datalist>
+                        </div>
 
-                <div class="col-md-5">
-                    <input type="text" class="form-control bg-transparent" name="name_supp2" id="name_supp2" placeholder="Supplier name (Option)">
-                </div>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control bg-transparent" name="name_supp2" id="name_supp2" placeholder="Supplier name (Option)">
+                        </div>
 
-                <div class="col-md-2">
-                    
-                </div>
-                <div class="col-md-2">
-                    <p class="text-end"><button class="btn btn-secondary" type="button" id="clearSupplier" onclick="EmptySupplierData(2)">Clear</button></p>
-                </div>
-            </div>
-            <div class="row mb-3 bg-transparent">
-                <div class="col-md-3">
-                    <input type="text" class="form-control bg-transparent" name="vc_supp2" id="vc_supp2" placeholder="V/C" style="display:none">
-                    <input type="text" class="form-control" name="contact_supp2" id="contact_supp2" placeholder="Contact">
-                </div>
-                <div class="col-md-5">
-                    <input type="email" class="form-control" name="email_supp2" id="email_supp2" placeholder="E-Mail">
-                </div>
-                <div class="col-md-4">
-                    <input type="text" class="form-control" name="tel_supp2" id="tel_supp2" placeholder="Tel/Fax.">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <input type="text" class="form-control" name="remark_supp2" id="remark_supp2" placeholder="Remark.">
-                    <input type="text" class="form-control" name="quoref_supp2" id="quoref_supp2" placeholder="Ref Quotation No." style="display:none">
-                    <div class="form-floating form-floating-outline mb-6" style="display:none">
-                        <input class="form-control" type="date" id="refnodt_supp2" />
-                        <label for="refnodt_supp2">Ref. Date</label>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                            <p class="text-end"><button class="btn btn-secondary" type="button" id="clearSupplier2" onclick="EmptySupplierData(2)">Clear</button></p>
+                        </div>
+                    </div>
+                    <div class="row mb-3 bg-transparent">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control bg-transparent" name="vc_supp2" id="vc_supp2" placeholder="V/C" style="display:none">
+                            <input type="text" class="form-control" name="contact_supp2" id="contact_supp2" placeholder="Contact">
+                        </div>
+                        <div class="col-md-5">
+                            <input type="email" class="form-control" name="email_supp2" id="email_supp2" placeholder="E-Mail">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="tel_supp2" id="tel_supp2" placeholder="Tel/Fax.">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" name="remark_supp2" id="remark_supp2" placeholder="Remark.">
+                            <input type="text" class="form-control" name="quoref_supp2" id="quoref_supp2" placeholder="Ref Quotation No." style="display:none">
+                            <div class="form-floating form-floating-outline mb-6" style="display:none">
+                                <input class="form-control" type="date" id="refnodt_supp2" />
+                                <label for="refnodt_supp2">Ref. Date</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                @* <div class="col-md-3">
-                </div>
-
-                <div class="col-md-3">
-                </div> *@
             </div>
-        </div>
-    </div>
-    <!-- /End Suggest Supplier 2 -->
-    <br />
-    <!-- Start Suggest Supplier 3 -->
-    <div class="card" id="card-supp3" style="display:none">
-      <h5 class="card-header">Suggested Supplier 3</h5>
-        <div class="card-body">
-            <div class="row mb-3 bg-transparent">
-                <div class="col-md-3 border-warning">
-                    <input class="form-control custom-number-btinfo" list="opt_supp3" id="id_supp3" name="id_supp3" placeholder="Select Supplier">
-                    <datalist name="opt_supp3" id="opt_supp3">
-                        @{
-                            if (modelVen != null)
-                            {
-                                foreach (var rowVen in modelVen)
+            <!-- /End Suggest Supplier 2 -->
+            <br />
+            <!-- Start Suggest Supplier 3 -->
+            <div class="card bt-card" id="card-supp3" style="display:none">
+                <h5 class="bt-subcard-header"><i class="ri-truck-line"></i> Suggested supplier 3</h5>
+                <div class="card-body">
+                    <div class="row mb-3 bg-transparent">
+                        <div class="col-md-3 border-warning">
+                            <input class="form-control custom-number-btinfo" list="opt_supp3" id="id_supp3" name="id_supp3" placeholder="Select Supplier">
+                            <datalist name="opt_supp3" id="opt_supp3">
+                                @foreach (var rowVen in modelVen)
                                 {
                                     <option value="@rowVen.VenCode">[@rowVen.Vencurrency] @rowVen.VenName</option>
                                 }
-                            }
-                        }
-                    </datalist>
-                </div>
+                            </datalist>
+                        </div>
 
-                <div class="col-md-5">
-                    <input type="text" class="form-control bg-transparent" name="name_supp3" id="name_supp3" placeholder="Supplier name (Option)">
-                </div>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control bg-transparent" name="name_supp3" id="name_supp3" placeholder="Supplier name (Option)">
+                        </div>
 
-                <div class="col-md-2">
-                    
-                </div>
-                <div class="col-md-2">
-                    <p class="text-end"><button class="btn btn-secondary" type="button" id="clearSupplier" onclick="EmptySupplierData(3)">Clear</button></p>
-                </div>
-            </div>
-            <div class="row mb-3 bg-transparent">
-                <div class="col-md-3">
-                    <input type="text" class="form-control bg-transparent" name="vc_supp3" id="vc_supp3" placeholder="V/C" style="display:none">
-                    <input type="text" class="form-control" name="contact_supp3" id="contact_supp3" placeholder="Contact">
-                </div>
-                <div class="col-md-5">
-                    <input type="email" class="form-control" name="email_supp3" id="email_supp3" placeholder="E-Mail">
-                </div>
-                <div class="col-md-4">
-                    <input type="text" class="form-control" name="tel_supp3" id="tel_supp3" placeholder="Tel/Fax.">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <input type="text" class="form-control" name="remark_supp3" id="remark_supp3" placeholder="Remark.">
-                    <input type="text" class="form-control" name="quoref_supp3" id="quoref_supp3" placeholder="Ref Quotation No." style="display:none">
-                    <div class="form-floating form-floating-outline mb-6" style="display:none">
-                        <input class="form-control" type="date" id="refnodt_supp3" />
-                        <label for="refnodt_supp3">Ref. Date</label>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                            <p class="text-end"><button class="btn btn-secondary" type="button" id="clearSupplier3" onclick="EmptySupplierData(3)">Clear</button></p>
+                        </div>
+                    </div>
+                    <div class="row mb-3 bg-transparent">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control bg-transparent" name="vc_supp3" id="vc_supp3" placeholder="V/C" style="display:none">
+                            <input type="text" class="form-control" name="contact_supp3" id="contact_supp3" placeholder="Contact">
+                        </div>
+                        <div class="col-md-5">
+                            <input type="email" class="form-control" name="email_supp3" id="email_supp3" placeholder="E-Mail">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="tel_supp3" id="tel_supp3" placeholder="Tel/Fax.">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" name="remark_supp3" id="remark_supp3" placeholder="Remark.">
+                            <input type="text" class="form-control" name="quoref_supp3" id="quoref_supp3" placeholder="Ref Quotation No." style="display:none">
+                            <div class="form-floating form-floating-outline mb-6" style="display:none">
+                                <input class="form-control" type="date" id="refnodt_supp3" />
+                                <label for="refnodt_supp3">Ref. Date</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                @* <div class="col-md-3">
-                </div>
-
-                <div class="col-md-3">
-                </div> *@
             </div>
-        </div>
-    </div>
-    <!-- /End Suggest Supplier 3 -->
-    <br />
-    <!-- Start Suggest Supplier 4 -->
-    <div class="card" id="card-supp4" style="display:none">
-        <h5 class="card-header">Suggested Supplier 4</h5>
-        <div class="card-body">
-            <div class="row mb-3 bg-transparent">
-                <div class="col-md-3 border-warning">
-                    <input class="form-control custom-number-btinfo" list="opt_supp4" id="id_supp4" name="id_supp4" placeholder="Select Supplier">
-                    <datalist name="opt_supp4" id="opt_supp4">
-                        @{
-                            if (modelVen != null)
-                            {
-                                foreach (var rowVen in modelVen)
+            <!-- /End Suggest Supplier 3 -->
+            <br />
+            <!-- Start Suggest Supplier 4 -->
+            <div class="card bt-card" id="card-supp4" style="display:none">
+                <h5 class="bt-subcard-header"><i class="ri-truck-line"></i> Suggested supplier 4</h5>
+                <div class="card-body">
+                    <div class="row mb-3 bg-transparent">
+                        <div class="col-md-3 border-warning">
+                            <input class="form-control custom-number-btinfo" list="opt_supp4" id="id_supp4" name="id_supp4" placeholder="Select Supplier">
+                            <datalist name="opt_supp4" id="opt_supp4">
+                                @foreach (var rowVen in modelVen)
                                 {
                                     <option value="@rowVen.VenCode">[@rowVen.Vencurrency] @rowVen.VenName</option>
                                 }
-                            }
-                        }
-                    </datalist>
-                </div>
+                            </datalist>
+                        </div>
 
-                <div class="col-md-5">
-                    <input type="text" class="form-control bg-transparent" name="name_supp4" id="name_supp4" placeholder="Supplier name (Option)">
-                </div>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control bg-transparent" name="name_supp4" id="name_supp4" placeholder="Supplier name (Option)">
+                        </div>
 
-                <div class="col-md-2">
-                </div>
-                <div class="col-md-2">
-                    <p class="text-end"><button class="btn btn-secondary" type="button" id="clearSupplier" onclick="EmptySupplierData(3)">Clear</button></p>
-                </div>
-            </div>
-            <div class="row mb-3 bg-transparent">
-                <div class="col-md-3">
-                    <input type="text" class="form-control bg-transparent" name="vc_supp4" id="vc_supp4" placeholder="V/C" style="display:none">
-                    <input type="text" class="form-control" name="contact_supp4" id="contact_supp4" placeholder="Contact">
-                </div>
-                <div class="col-md-5">
-                    <input type="email" class="form-control" name="email_supp4" id="email_supp4" placeholder="E-Mail">
-                </div>
-                <div class="col-md-4">
-                    <input type="text" class="form-control" name="tel_supp4" id="tel_supp4" placeholder="Tel/Fax.">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <input type="text" class="form-control" name="remark_supp4" id="remark_supp4" placeholder="Remark.">
-                    <div class="form-floating form-floating-outline mb-6" style="display:none">
-                        <input class="form-control" type="date" id="refnodt_supp4" />
-                        <label for="refnodt_supp4">Ref. Date</label>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                            <p class="text-end"><button class="btn btn-secondary" type="button" id="clearSupplier4" onclick="EmptySupplierData(4)">Clear</button></p>
+                        </div>
+                    </div>
+                    <div class="row mb-3 bg-transparent">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control bg-transparent" name="vc_supp4" id="vc_supp4" placeholder="V/C" style="display:none">
+                            <input type="text" class="form-control" name="contact_supp4" id="contact_supp4" placeholder="Contact">
+                        </div>
+                        <div class="col-md-5">
+                            <input type="email" class="form-control" name="email_supp4" id="email_supp4" placeholder="E-Mail">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="tel_supp4" id="tel_supp4" placeholder="Tel/Fax.">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" name="remark_supp4" id="remark_supp4" placeholder="Remark.">
+                            <div class="form-floating form-floating-outline mb-6" style="display:none">
+                                <input class="form-control" type="date" id="refnodt_supp4" />
+                                <label for="refnodt_supp4">Ref. Date</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                @* <div class="col-md-3">
-                    <input type="text" class="form-control" name="quoref_supp4" id="quoref_supp4" placeholder="Ref Quotation No." style="display:none">
-                </div>
-
-                <div class="col-md-3">
-                </div> *@
             </div>
-        </div>
-    </div>
-    <!-- /End Suggest Supplier 4 -->
-    <br />
-    <!-- Start Suggest Supplier 5 -->
-    <div class="card" id="card-supp5" style="display:none">
-        <h5 class="card-header">Suggested Supplier 5</h5>
-        <div class="card-body">
-            <div class="row mb-3 bg-transparent">
-                <div class="col-md-3 border-warning">
-                    <input class="form-control custom-number-btinfo" list="opt_supp5" id="id_supp5" name="id_supp5" placeholder="Select Supplier">
-                    <datalist name="opt_supp5" id="opt_supp5">
-                        @{
-                            if (modelVen != null)
-                            {
-                                foreach (var rowVen in modelVen)
+            <!-- /End Suggest Supplier 4 -->
+            <br />
+            <!-- Start Suggest Supplier 5 -->
+            <div class="card bt-card" id="card-supp5" style="display:none">
+                <h5 class="bt-subcard-header"><i class="ri-truck-line"></i> Suggested supplier 5</h5>
+                <div class="card-body">
+                    <div class="row mb-3 bg-transparent">
+                        <div class="col-md-3 border-warning">
+                            <input class="form-control custom-number-btinfo" list="opt_supp5" id="id_supp5" name="id_supp5" placeholder="Select Supplier">
+                            <datalist name="opt_supp5" id="opt_supp5">
+                                @foreach (var rowVen in modelVen)
                                 {
                                     <option value="@rowVen.VenCode">[@rowVen.Vencurrency] @rowVen.VenName</option>
                                 }
-                            }
-                        }
-                    </datalist>
-                </div>
+                            </datalist>
+                        </div>
 
-                <div class="col-md-5">
-                    <input type="text" class="form-control bg-transparent" name="name_supp5" id="name_supp5" placeholder="Supplier name (Option)">
-                </div>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control bg-transparent" name="name_supp5" id="name_supp5" placeholder="Supplier name (Option)">
+                        </div>
 
-                <div class="col-md-2">
-                </div>
-                <div class="col-md-2">
-                    <p class="text-end"><button class="btn btn-secondary" type="button" id="clearSupplier" onclick="EmptySupplierData(3)">Clear</button></p>
-                </div>
-            </div>
-            <div class="row mb-3 bg-transparent">
-                <div class="col-md-3">
-                    <input type="text" class="form-control bg-transparent" name="vc_supp5" id="vc_supp5" placeholder="V/C" style="display:none">
-                    <input type="text" class="form-control" name="contact_supp5" id="contact_supp5" placeholder="Contact">
-                </div>
-                <div class="col-md-5">
-                    <input type="email" class="form-control" name="email_supp5" id="email_supp5" placeholder="E-Mail">
-                </div>
-                <div class="col-md-4">
-                    <input type="text" class="form-control" name="tel_supp5" id="tel_supp5" placeholder="Tel/Fax.">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <input type="text" class="form-control" name="remark_supp5" id="remark_supp5" placeholder="Remark.">
-                    <input type="text" class="form-control" name="quoref_supp5" id="quoref_supp5" placeholder="Ref Quotation No." style="display:none">
-                    <div class="form-floating form-floating-outline mb-6" style="display:none">
-                        <input class="form-control" type="date" id="refnodt_supp5" />
-                        <label for="refnodt_supp5">Ref. Date</label>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                            <p class="text-end"><button class="btn btn-secondary" type="button" id="clearSupplier5" onclick="EmptySupplierData(5)">Clear</button></p>
+                        </div>
+                    </div>
+                    <div class="row mb-3 bg-transparent">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control bg-transparent" name="vc_supp5" id="vc_supp5" placeholder="V/C" style="display:none">
+                            <input type="text" class="form-control" name="contact_supp5" id="contact_supp5" placeholder="Contact">
+                        </div>
+                        <div class="col-md-5">
+                            <input type="email" class="form-control" name="email_supp5" id="email_supp5" placeholder="E-Mail">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="tel_supp5" id="tel_supp5" placeholder="Tel/Fax.">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" name="remark_supp5" id="remark_supp5" placeholder="Remark.">
+                            <input type="text" class="form-control" name="quoref_supp5" id="quoref_supp5" placeholder="Ref Quotation No." style="display:none">
+                            <div class="form-floating form-floating-outline mb-6" style="display:none">
+                                <input class="form-control" type="date" id="refnodt_supp5" />
+                                <label for="refnodt_supp5">Ref. Date</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                @* <div class="col-md-3">
-                </div>
-
-                <div class="col-md-3">
-                </div> *@
             </div>
+            <!-- /End Suggest Supplier 5 -->
+            <div class="row" style="display:none">
+                <!-- Public Remark -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Public Remark:</label>
+                    <textarea class="form-control" name="pub_remark" id="pub_remark" rows="3"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                </div>
+            </div>
+            <button type="button" class="btn btn-bt-primary" onclick="SavePRHeader(0)"><i class="ri-save-3-line"></i> Save next</button>
+            <span id="lblNotics">&nbsp;&nbsp;</span>
         </div>
     </div>
-    <!-- /End Suggest Supplier 5 -->
-    <div class="row" style="display:none">
-        <!-- Public Remark -->
-        <div class="col-md-6 mb-3">
-            <label class="form-label fw-bold">Public Remark:</label>
-            <textarea class="form-control" name="pub_remark" id="pub_remark" rows="3"></textarea>
-        </div>
-        <div class="col-md-6 mb-3">
-
-        </div>
-    </div>
-    <button type="button" class="btn btn-info" onclick="SavePRHeader(0)">Save Next >></button>
-    <span id="lblNotics">&nbsp;&nbsp;</span>
 </form>
 <div class="layout-demo-info">
     <button class="btn btn-outline-secondary" id="toggleFullscreenBtn">
@@ -472,16 +403,13 @@
     </button>
 </div>
 
-@* ************** End Content ************** *@
-<hr class="my-12">
-<!-- Modal Warning-->
+<!-- User permission warning modal -->
 <div class="modal fade" id="modalAuth" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="authwarning" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <input type="hidden" id="adminRole" value="@ViewData["UROLEADMIN"]" />
                 <h5 class="modal-title text-danger" id="authwarning">User Permission</h5>
-                @* <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
             </div>
             <div class="modal-body">
                 You don't have this permission
@@ -494,9 +422,6 @@
 </div>
 
 @section PageScripts {
-    @* <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script> *@
-
     <script src="~/js/jquery.js"></script>
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/datatables.js"></script>

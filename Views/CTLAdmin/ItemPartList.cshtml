@@ -1,12 +1,12 @@
 @{
-  ViewData["Title"] = "[Procure Itempart Setting]";
+    ViewData["Title"] = "Item part configuration";
 }
 
-@* ************** Content ************** *@
 @section PageStyles {
     <link href="~/css/datatables.min.css" rel="stylesheet" />
     <link href="~/css/datatables.css" rel="stylesheet" />
     <link href="~/css/itempartlist.css" rel="stylesheet" />
+    <link href="~/css/bt-theme.css" rel="stylesheet" />
 }
 @section VendorScripts {
     <script src="~/js/jquery.js"></script>
@@ -14,46 +14,39 @@
     <script src="~/js/datatables.js"></script>
     <script src="~/js/datatables.min.js"></script>
 }
-<!-- Start Basic Bootstrap Table -->
-<div class="card">
-    <div class="table-responsive text-nowrap">
-        <div class="container">
-            <div class="row card-header">
-                <div class="col-sm-12 align-self-end" id="spanAdmin" style="display:none">
-                    <div class="row">
-                        <div class="col-md-4">
-                          <h5 class="card-header">@ViewData["Title"]</h5>
-                          <input type="hidden" id="adminRole" value="@ViewData["UROLEADMIN"]" />
-                        </div>
-                        <div class="col-md-4">
-                            <input class="form-control" type="text" id="itemno" placeholder="Item No" />
-                        </div>
-                        <div class="col-md-4">
-                            <input class="form-control" type="text" id="itemdoc" placeholder="Item doc (Option)" />
-                            <input class="form-control" type="hidden" id="itemnoTmp" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-8">
-                            <input class="form-control" type="text" id="itemname" placeholder="Item Name" />
-                        </div>
-                        <div class="col-md-2">
-                              <button class="btn btn-info" type="button" id="btnSubmit">Add +</button>
-                        </div>
-                        <div class="col-md-2">
-                              <i id="btnItemEdit" class="ri-save-3-fill text-success" onclick="javascript:SaveEditItem();" style="cursor:pointer; font-size: 24px; display:none" title='Edit'></i>
-                              <i id="btnItemDel" class="ri-delete-bin-2-fill text-danger" onclick="javascript:DeleteItem();" style="cursor:pointer; font-size: 24px; display:none" title='Delete'></i>
-                        </div>
-                    </div>
-                </div>
 
+<div class="card bt-card mb-4">
+    <div class="bt-page-header">
+        <h5><i class="ri-archive-line"></i> @ViewData["Title"]</h5>
+        <input type="hidden" id="adminRole" value="@ViewData["UROLEADMIN"]" />
+    </div>
+
+    <div class="bt-form-panel" id="spanAdmin" style="display:none">
+        <div class="bt-form-panel-label">Add / edit item part</div>
+        <div class="row">
+            <div class="col-md-3">
+                <input class="form-control" type="hidden" id="itemnoTmp" />
+                <input class="form-control" type="text" id="itemno" placeholder="Item No" />
+            </div>
+            <div class="col-md-5">
+                <input class="form-control" type="text" id="itemname" placeholder="Item Name" />
+            </div>
+            <div class="col-md-2">
+                <input class="form-control" type="text" id="itemdoc" placeholder="Item doc (Option)" />
+            </div>
+            <div class="col-md-2 d-flex align-items-center gap-3">
+                <button class="btn btn-bt-primary" type="button" id="btnSubmit">Add +</button>
+                <div class="bt-action-icons">
+                    <i id="btnItemEdit" class="ri-save-3-fill text-success" onclick="javascript:SaveEditItem();" style="display:none" title="Edit"></i>
+                    <i id="btnItemDel" class="ri-delete-bin-2-fill text-danger" onclick="javascript:DeleteItem();" style="display:none" title="Delete"></i>
+                </div>
             </div>
         </div>
+    </div>
 
+    <div class="table-responsive text-nowrap">
         <table id="bindDataTable" class="table table-hover" width="100%">
-            <caption>
-                Itempart configuration.
-            </caption>
+            <caption class="visually-hidden">Item part configuration</caption>
             <thead>
                 <tr>
                     <th>BT Item No</th>
@@ -76,18 +69,15 @@
                 </tr>
             </tfoot>
         </table>
-
     </div>
 </div>
-<!-- Users Basic Bootstrap Table -->
-<hr class="my-12">
-<!-- Modal Warning-->
+
+<!-- User permission warning modal -->
 <div class="modal fade" id="modalAuth" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="authwarning" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title text-danger" id="authwarning">User Permission</h5>
-                @* <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
             </div>
             <div class="modal-body">
                 You don't have this permission
@@ -102,4 +92,3 @@
 @section PageScripts {
     <script src="~/js/itempartlist.js?v=1.0.0"></script>
 }
-

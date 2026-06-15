@@ -1,62 +1,49 @@
 @{
-  ViewData["Title"] = "Account code Configuration";
+    ViewData["Title"] = "Account code configuration";
 }
 
-@* ************** Content ************** *@
 @section PageStyles {
     <link href="~/css/datatables.min.css" rel="stylesheet" />
     <link href="~/css/datatables.css" rel="stylesheet" />
     <link href="~/css/acccodelist.css" rel="stylesheet" />
-    
+    <link href="~/css/bt-theme.css" rel="stylesheet" />
 }
-<!-- Start Basic Bootstrap Table -->
-<div class="card">
-    <div class="table-responsive text-nowrap">
-        <div class="container">
-            <div class="row card-header">
-                <div class="col-sm-2 align-self-start">
-                    <h5 class="card-header">[Account Code]</h5>
-                    <input type="hidden" id="adminRole" value="@ViewData["UROLEADMIN"]" />
+
+<div class="card bt-card mb-4">
+    <div class="bt-page-header">
+        <h5><i class="ri-list-settings-line"></i> Account code configuration</h5>
+        <input type="hidden" id="adminRole" value="@ViewData["UROLEADMIN"]" />
+    </div>
+
+    <div class="bt-form-panel" id="spanAdmin" style="display:none">
+        <div class="bt-form-panel-label">Add / edit account code</div>
+        <div class="row">
+            <div class="col-md-3">
+                <input class="form-control" type="hidden" id="accMainTmp" />
+                <input class="form-control" type="text" id="accMain" placeholder="* Acc Main" />
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" id="accName" placeholder="* Acc Name" />
+            </div>
+            <div class="col-md-2">
+                <input class="form-control" type="text" id="accType" placeholder="Acc Type" />
+            </div>
+            <div class="col-md-2">
+                <input class="form-control" type="text" id="accCategory" placeholder="Acc Cat." />
+            </div>
+            <div class="col-md-2 d-flex align-items-center gap-3">
+                <button class="btn btn-bt-primary" type="button" id="btnSubmit">Add +</button>
+                <div class="bt-action-icons">
+                    <i id="btnAccEdit" class="ri-save-3-fill text-success" onclick="javascript:SaveEditAccount();" style="display:block" title="Edit"></i>
+                    <i id="btnAccDel" class="ri-delete-bin-2-fill text-danger" onclick="javascript:DeleteAccount();" style="display:block" title="Delete"></i>
                 </div>
-                @{
-                    string sUROLEADMIN = Context.Session.GetString(SessionModel.UROLEADMIN) ?? string.Empty;
-                }
-                <div class="col-sm-10 align-self-end" id="spanAdmin" style="display:none">
-                      <div class="d-flex justify-content-end">
-                          <div class="row">
-                              <div class="col-md-5">
-                                  <input class="form-control" type="hidden" id="accMainTmp" />
-                                  <input class="form-control" type="text" id="accMain" placeholder="*Acc Main" />
-                                  <input class="form-control" type="text" id="accType" placeholder="Acc Type" />
-                              </div>
-                              <div class="col-md-5">
-                                  <input class="form-control" type="text" id="accName" placeholder="*Acc Name" />
-                                  <input class="form-control" type="text" id="accCategory" placeholder="Acc Cat." />
-                              </div>
-                              <div class="col-md-2">
-                                  <button class="btn btn-info" type="button" id="btnSubmit">Add +</button> <br/><br/>
-                                  <div class="row">
-                                      <div class="col-md-6 text-center">
-                                          <p class="text-center"><i id="btnAccEdit" class="ri-save-3-fill text-success" onclick="javascript:SaveEditAccount();" style="cursor:pointer; font-size: 24px; display:block" title='Edit'></i></p>
-                                      </div>
-                                      <div class="col-md-6 text-center">
-                                        <p class="text-center"><i id="btnAccDel" class="ri-delete-bin-2-fill text-danger" onclick="javascript:DeleteAccount();" style="cursor:pointer; font-size: 24px; display:block" title='Delete'></i></p>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-
-                      </div>
-                  </div>
-                
-
             </div>
         </div>
+    </div>
 
+    <div class="table-responsive text-nowrap">
         <table id="bindDataTable" class="table table-hover" width="100%">
-            <caption>
-                Account Code Configuration
-            </caption>
+            <caption class="visually-hidden">Account code configuration</caption>
             <thead>
                 <tr>
                     <th>Acc Main</th>
@@ -82,18 +69,15 @@
                 </tr>
             </tfoot>
         </table>
-
     </div>
 </div>
-<!-- Users Basic Bootstrap Table -->
-<hr class="my-12">
-<!-- Modal Warning-->
+
+<!-- User permission warning modal -->
 <div class="modal fade" id="modalAuth" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="authwarning" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title text-danger" id="authwarning">User Permission</h5>
-                @* <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
             </div>
             <div class="modal-body">
                 You don't have this permission
@@ -104,15 +88,11 @@
         </div>
     </div>
 </div>
-@section PageScripts {
-    @* <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script> *@
 
+@section PageScripts {
     <script src="~/js/jquery.js"></script>
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/datatables.js"></script>
     <script src="~/js/datatables.min.js"></script>
-
     <script src="~/js/acccodelist.js?v=1.0.4"></script>
 }
-

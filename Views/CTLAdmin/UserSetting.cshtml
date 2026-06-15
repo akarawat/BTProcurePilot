@@ -1,75 +1,61 @@
 @{
-  ViewData["Title"] = "Users Setting";
-  List<HRUserModel> useHr = new List<HRUserModel>();
-  useHr = Model.VMHrUserModel;
+    ViewData["Title"] = "User permission setting";
+    List<HRUserModel> useHr = Model.VMHrUserModel ?? new List<HRUserModel>();
 }
 
-@* ************** Content ************** *@
 @section PageStyles {
     <link href="~/css/datatables.min.css" rel="stylesheet" />
     <link href="~/css/datatables.css" rel="stylesheet" />
     <link href="~/css/usersetting.css" rel="stylesheet" />
+    <link href="~/css/bt-theme.css" rel="stylesheet" />
 }
-<!-- Start Basic Bootstrap Table -->
-<div class="card">
-    <div class="table-responsive text-nowrap">
-        <div class="container">
-            <div class="row card-header">
-                <distributed-cache
-                    class="col-sm-2 align-self-start">
-                    <h5 class="card-header">@ViewData["Title"]</h5>
-                </distributed-cache>
-                <div class="col-sm-12 align-self-end">
-                    <div class="d-flex justify-content-end">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <input type="hidden" id="tmpID" />
-                                <input type="hidden" id="adminRole" value="@ViewData["UROLEADMIN"]" />
-                                <label for="id_emp_procure" class="form-label">Select Users</label>
-                                <input class="form-control" list="opt_emp_procure" id="id_emp_procure" name="lst_emp_procure" placeholder="รหัสพนักงาน...">
-                                <datalist name="opt_emp_procure" id="opt_emp_procure">
-                                    @{
-                                        if (useHr != null)
-                                        {
-                                            foreach (var rowAcc in useHr)
-                                            {
-                                                <option value="@rowAcc.EMP_CODE : @rowAcc.UEMAIL">@rowAcc.DISPNAME</option>
-                                            }
-                                        }
-                                    }
-                                </datalist>
-                            </div>
-                            <div class="col-md-5">
-                                <label for="usrRole" class="form-label">Permission Role</label>
-                                <select id="usrRole" class="form-select form-select-sm">
-                                    <option></option>
-                                    <option value="9">Administartor</option>
-                                    <option value="1">Supervisor</option>
-                                    <option value="2">Manager</option>
-                                    <option value="91">Procure Manager</option>
-                                    <option value="3">Management Director</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <button class="btn btn-info" type="button" id="btnSave">SAVE +</button>
-                            </div>
-                        </div>
 
-                    </div>
-                </div>
+<div class="card bt-card mb-4">
+    <div class="bt-page-header">
+        <h5><i class="ri-shield-user-line"></i> @ViewData["Title"]</h5>
+        <input type="hidden" id="adminRole" value="@ViewData["UROLEADMIN"]" />
+        <input type="hidden" id="tmpID" />
+    </div>
+
+    <div class="bt-form-panel">
+        <div class="bt-form-panel-label">Assign permission</div>
+        <div class="row">
+            <div class="col-md-5">
+                <label for="id_emp_procure" class="form-label">Select user</label>
+                <input class="form-control" list="opt_emp_procure" id="id_emp_procure" name="lst_emp_procure" placeholder="รหัสพนักงาน...">
+                <datalist name="opt_emp_procure" id="opt_emp_procure">
+                    @foreach (var rowAcc in useHr)
+                    {
+                        <option value="@rowAcc.EMP_CODE : @rowAcc.UEMAIL">@rowAcc.DISPNAME</option>
+                    }
+                </datalist>
+            </div>
+            <div class="col-md-5">
+                <label for="usrRole" class="form-label">Permission role</label>
+                <select id="usrRole" class="form-select form-select-sm">
+                    <option></option>
+                    <option value="9">Administrator</option>
+                    <option value="1">Supervisor</option>
+                    <option value="2">Manager</option>
+                    <option value="91">Procure Manager</option>
+                    <option value="3">Management Director</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-bt-primary" type="button" id="btnSave">Save +</button>
             </div>
         </div>
+    </div>
 
+    <div class="table-responsive text-nowrap">
         <table id="bindDataTable" class="table table-hover" width="100%">
-            <caption>
-                Users Configuration
-            </caption>
+            <caption class="visually-hidden">Users configuration</caption>
             <thead>
                 <tr>
                     <th> </th>
                     <th>User Name</th>
                     <th>Role</th>
-                    <th>Actione</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -89,36 +75,30 @@
                 </tr>
             </tfoot>
         </table>
-
     </div>
 </div>
-<!-- Users Basic Bootstrap Table -->
-<hr class="my-12">
-<!-- Modal Warning-->
+
+<!-- User permission warning modal -->
 <div class="modal fade" id="modalAuth" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="authwarning" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-danger" id="authwarning">User Permission</h5>
-        @* <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
-      </div>
-      <div class="modal-body">
-        You don't have this permission
-      </div>
-      <div class="modal-footer">
-        <button type="button" id="btnModalClose" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="authwarning">User Permission</h5>
+            </div>
+            <div class="modal-body">
+                You don't have this permission
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnModalClose" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 @section PageScripts {
-    
     <script src="~/js/jquery.js"></script>
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/datatables.js"></script>
     <script src="~/js/datatables.min.js"></script>
-
     <script src="~/js/usersetting.js"></script>
 }
-
