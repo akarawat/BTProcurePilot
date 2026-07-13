@@ -50,7 +50,7 @@ public class DashboardsController : Controller
     // Debug Mode Skip Authen
     /*
     string sUSERLOGON = "";
-    user = "BERNINATHAILAND\\martin.r"; //chamaiporn.k, manu.m, Suriyothin.M, yuttaphum.p, Kitiphong.T, yannick.t, saowanee.s, kanit.c, Prasit.Y, Sompop.S, user = "BERNINATHAILAND\\nipaporn.u";
+    user = "BERNINATHAILAND\\suweena.s"; //chamaiporn.k, manu.m, Suriyothin.M, yuttaphum.p, Kitiphong.T, yannick.t, saowanee.s, kanit.c, Prasit.Y, Sompop.S, user = "BERNINATHAILAND\\nipaporn.u";
     string[] arrSamName = user.Split(new char[] { '\\' });
     if (arrSamName.Length == 2)
     {

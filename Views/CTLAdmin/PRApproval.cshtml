@@ -44,16 +44,24 @@
     <link href="~/css/datatables.min.css" rel="stylesheet" />
     <link href="~/css/datatables.css" rel="stylesheet" />
     <link href="~/css/prnewrequest.css" rel="stylesheet" />
+    <link href="~/css/bt-theme.css" rel="stylesheet" />
 }
 @section VendorScripts {
     <script src="~/js/moment.min.js"></script>
     
 }
 <form method="post">
+  <div class="card bt-card mb-4">
+    <div class="bt-page-header">
+        <h5><i class="ri-file-check-line"></i> Purchase Request (Approval Form)</h5>
+        <span class="bt-page-header-tag" id="prno_preix_tag"></span>
+    </div>
+    <div class="card-body">
     <div class="row">
         <!-- Approx require -->
         <div class="col-md-8 mb-3">
-          <h4 class="mb-3 text-center text-bg-info">Purchase Request (Approval Form)</h4>
+          Status: <label class="form-label text-info" id="lblReqStatus">-</label> <br/>
+          Last Update: <label class="form-label text-info" id="lblLastupdate">-</label>
         </div>
         <div class="col-md-4 mb-3">
             <div class="form-check">
@@ -79,10 +87,6 @@
     <div class="row">
         <!-- Approx require -->
         <div class="col-md-4 mb-3">
-          Status: <label class="form-label text-info" id="lblReqStatus">-</label> <br/>
-          Last Update: <label class="form-label text-info" id="lblLastupdate">-</label>
-        </div>
-        <div class="col-md-4 mb-3">
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="rdoApprox" id="rdoApprox" value="3" disabled>
                 <label class="form-check-label" for="rdoApprox">Urgent-PO issue after receive PR 3 working days</label>
@@ -102,6 +106,7 @@
                        placeholder="Investment request / Credit request No." disabled>
             </div>
         </div>
+        <div class="col-md-4 mb-3"></div>
     </div>
     <div class="row">
         <!-- Purpose -->
@@ -180,10 +185,9 @@
         </div>
     </div>
     <!-- Start Suggest Supplier 1 -->
-    <div class="card bg-body">
+    <div class="card bt-card mb-3" id="card-supp1" style="display:none">
+        <h5 class="bt-subcard-header"><i class="ri-truck-line"></i> Suggested Supplier 1</h5>
         <div class="card-body">
-            <div class="row" id="card-supp1" style="display:none">
-                <h5 class="card-header">Suggested Supplier 1</h5>
               <div class="row mb-3">
                   <div class="col-md-3 border-warning">
                         <input class="form-control custom-number-btinfo" list="opt_supp1" id="id_supp1" name="id_supp1" placeholder="Select Supplier" disabled>
@@ -196,7 +200,7 @@
                   </div>
                   <div class="col-md-1"></div>
                   <div class="col-md-3">
-                    
+
                   </div>
               </div>
               <div class="row mb-3 bg-transparent">
@@ -220,16 +224,15 @@
                             <label for="refnodt_supp1">Ref. Date</label>
                         </div>
                   </div>
-                 @*  <div class="col-md-3">
-                  </div>
-
-                  <div class="col-md-3">
-                  </div> *@
               </div>
-          </div>
+        </div>
+    </div>
+    <!-- /End Suggest Supplier 1 -->
 
-            <div class="row" id="card-supp2" style="display:none">
-                <h5 class="card-header">Suggested Supplier 2</h5>
+    <!-- Start Suggest Supplier 2 -->
+    <div class="card bt-card mb-3" id="card-supp2" style="display:none">
+        <h5 class="bt-subcard-header"><i class="ri-truck-line"></i> Suggested Supplier 2</h5>
+        <div class="card-body">
               <div class="row mb-3 bg-transparent">
                   <div class="col-md-3 border-warning">
                         <input class="form-control custom-number-btinfo" list="opt_supp2" id="id_supp2" name="id_supp2" placeholder="Select Supplier" disabled>
@@ -264,16 +267,15 @@
                             <label for="refnodt_supp2">Ref. Date</label>
                         </div>
                   </div>
-                  @*<div class="col-md-3">
-                  </div>
-
-                  <div class="col-md-3">
-                  </div>*@
               </div>
-          </div>
-            @* Start Supp3 *@
-            <div class="row" id="card-supp3" style="display:none">
-                <h5 class="card-header">Suggested Supplier 3</h5>
+        </div>
+    </div>
+    <!-- /End Suggest Supplier 2 -->
+
+    @* Start Supp3 *@
+    <div class="card bt-card mb-3" id="card-supp3" style="display:none">
+        <h5 class="bt-subcard-header"><i class="ri-truck-line"></i> Suggested Supplier 3</h5>
+        <div class="card-body">
               <div class="row mb-3 bg-transparent">
                   <div class="col-md-3 border-warning">
                         <input class="form-control custom-number-btinfo" list="opt_supp3" id="id_supp3" name="id_supp3" placeholder="Select Supplier" disabled>
@@ -308,17 +310,15 @@
                             <label for="refnodt_supp3">Ref. Date</label>
                         </div>
                   </div>
-                  @* <div class="col-md-3">
-                  </div>
-
-                  <div class="col-md-3">
-                  </div> *@
               </div>
-          </div>
-          @* /End Supp3 *@
-            @* Start supp4 *@
-            <div class="row" id="card-supp4" style="display:none">
-                <h5 class="card-header">Suggested Supplier 4</h5>
+        </div>
+    </div>
+    @* /End Supp3 *@
+
+    @* Start supp4 *@
+    <div class="card bt-card mb-3" id="card-supp4" style="display:none">
+        <h5 class="bt-subcard-header"><i class="ri-truck-line"></i> Suggested Supplier 4</h5>
+        <div class="card-body">
                 <div class="row mb-3 bg-transparent">
                     <div class="col-md-3 border-warning">
                         <input class="form-control custom-number-btinfo" list="opt_supp4" id="id_supp4" name="id_supp4" placeholder="Select Supplier" disabled>
@@ -353,17 +353,15 @@
                             <label for="refnodt_supp4">Ref. Date</label>
                         </div>
                     </div>
-                    @* <div class="col-md-3">
-                    </div>
-
-                    <div class="col-md-3">
-                    </div> *@
                 </div>
-            </div>
-            @* /End supp4 *@
-              @* Start supp5 *@
-            <div class="row" id="card-supp5" style="display:none">
-                <h5 class="card-header">Suggested Supplier 5</h5>
+        </div>
+    </div>
+    @* /End supp4 *@
+
+    @* Start supp5 *@
+    <div class="card bt-card mb-3" id="card-supp5" style="display:none">
+        <h5 class="bt-subcard-header"><i class="ri-truck-line"></i> Suggested Supplier 5</h5>
+        <div class="card-body">
                 <div class="row mb-3 bg-transparent">
                     <div class="col-md-3 border-warning">
                         <input class="form-control custom-number-btinfo" list="opt_supp5" id="id_supp5" name="id_supp5" placeholder="Select Supplier" disabled>
@@ -398,22 +396,15 @@
                             <label for="refnodt_supp5">Ref. Date</label>
                         </div>
                     </div>
-                    @* <div class="col-md-3">
-                    </div>
-
-                    <div class="col-md-3">
-                    </div> *@
                 </div>
-            </div>
-            @* /End supp5 *@
         </div>
     </div>
+    @* /End supp5 *@
     <!-- /End Suggest Supplier  -->
 
-    <br />
     <!-- Add PR Detail -->
-    <div class="card" id="card-detail">
-      <h5 class="card-header text-end">Items Detail</h5>
+    <div class="card bt-card mb-3" id="card-detail">
+      <h5 class="bt-subcard-header"><i class="ri-file-list-3-line"></i> Items Detail</h5>
       <div class="card-body">
           <div class="row border border-success p-2 text-success bg-body">
               <div class="col-md-2 p-2">
@@ -474,11 +465,9 @@
     <br />
 
     <!-- Attached file -->
-    <div class="row border border-info p-2 text-info">
-        <div class="col-md-4 p-2">
-            <strong>Attached file</strong>
-        </div>
-        <div class="column-gap-md-12 mb-3">
+    <div class="card bt-card mb-3">
+        <h5 class="bt-subcard-header"><i class="ri-attachment-2"></i> Attached file</h5>
+        <div class="card-body">
             <div id="adminUpload" style="display:none">
               <form id="frmUpload" enctype="multipart/form-data">
                   <input type="hidden" id="ref_prid" name="ref_prid">
@@ -510,16 +499,14 @@
                 </thead>
                 <tbody></tbody>
             </table>
-            
         </div>
     </div>
 
-    <br />
     <!--Start Approval ... -->
     <div class="row">
         <div class="col-md-3 mb-3">
-            <div class="card" id="card-requester">
-                <h5 class="card-header">Requester</h5>
+            <div class="card bt-card h-100" id="card-requester">
+                <h5 class="bt-subcard-header"><i class="ri-user-line"></i> Requester</h5>
                 <div class="card-body">
                     <input type="hidden" id="lblReqMail" name="lblReqMail" />
                     <input type="hidden" id="approvalStatus" />
@@ -530,8 +517,8 @@
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card" id="card-approval">
-                <h5 class="card-header">Approval  <br /> (S2-S3 or P2-P4)</h5>
+            <div class="card bt-card h-100" id="card-approval">
+                <h5 class="bt-subcard-header"><i class="ri-checkbox-circle-line"></i> Approval  <br /> (S2-S3 or P2-P4)</h5>
                 <input type="hidden" id="appFlag" />
                 <input type="hidden" id="appFlag2" />
                 <input type="hidden" id="person" name="person" />
@@ -582,8 +569,8 @@
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card" id="card-countersign">
-                <h5 class="card-header">Countersigned (MGR.)</h5>
+            <div class="card bt-card h-100" id="card-countersign">
+                <h5 class="bt-subcard-header"><i class="ri-shield-check-line"></i> Countersigned (MGR.)</h5>
                 <input type="hidden" id="countFlag" />
                 <div class="card-body">
                     <input type="hidden" id="lblCountEmpMail" name="lblCountEmpMail" />
@@ -603,8 +590,8 @@
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card" id="card-author">
-                <h5 class="card-header">Authorized (M.D.)</h5>
+            <div class="card bt-card h-100" id="card-author">
+                <h5 class="bt-subcard-header"><i class="ri-award-line"></i> Authorized (M.D.)</h5>
                 <input type="hidden" id="authFlag" />
                 <div class="card-body">
                     <input type="hidden" id="lblAuthEmpMail" name="lblAuthEmpMail" />
@@ -626,37 +613,43 @@
         </div>
     </div>
     <!--End Approval -->
+    </div>
+  </div>
 </form>
 <!-- Public Remark -->
-<div class="row" id="pubremark" style="display:none">
-    <p class="text-start"><button type="button" class="btn btn-info" id="btnSaveRemark" style="display:none">Save Remark</button></p>
-</div>
-<div class="row align-items-start">
-    <div class="col-md-6 mb-2">
-        <label class="form-label fw-bold bg-transparent">Public Remark (หมายเหตุ):</label>
-        <textarea class="form-control" name="pub_remark" id="pub_remark" rows="1" style="display:none"></textarea>
-    </div>
-</div>
+<div class="card bt-card mb-3">
+    <h5 class="bt-subcard-header"><i class="ri-chat-3-line"></i> Public Remark (หมายเหตุ)</h5>
+    <div class="card-body">
+        <div class="row" id="pubremark" style="display:none">
+            <p class="text-start"><button type="button" class="btn btn-info" id="btnSaveRemark" style="display:none">Save Remark</button></p>
+        </div>
+        <div class="row align-items-start">
+            <div class="col-md-6 mb-2">
+                <textarea class="form-control" name="pub_remark" id="pub_remark" rows="1" style="display:none"></textarea>
+            </div>
+        </div>
 
-<div class="row align-items-start">
-    <div class="col-sm-12">
-        <table class="table table-sm" id="bindDataTableRemark">
-            <tbody></tbody>
-        </table>
-    </div>
-</div>
+        <div class="row align-items-start">
+            <div class="col-sm-12">
+                <table class="table table-sm" id="bindDataTableRemark">
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
 
-<span id="divHisRemark">
-<div class="row align-items-start">
-    <div class="col-md-10 mb-2">
-        <input type="text" class="form-control" name="hisremark" id="hisremark" placeholder="Public Remark.">
-    </div>
-    <div class="col-md-2 mb-2 align-middle">
-        <button class="btn btn-info ri-arrow-left-double-line me-1" id="btnAddHisRemark"> Add</button>
-        @* <a href="javascript:alert('Test');"><i class="ri-calendar-check-line text-success me-1"></i> <br/>+Add Remark</a> *@
+        <span id="divHisRemark">
+        <div class="row align-items-start">
+            <div class="col-md-10 mb-2">
+                <input type="text" class="form-control" name="hisremark" id="hisremark" placeholder="Public Remark.">
+            </div>
+            <div class="col-md-2 mb-2 align-middle">
+                <button class="btn btn-info ri-arrow-left-double-line me-1" id="btnAddHisRemark"> Add</button>
+                @* <a href="javascript:alert('Test');"><i class="ri-calendar-check-line text-success me-1"></i> <br/>+Add Remark</a> *@
+            </div>
+        </div>
+        </span>
     </div>
 </div>
-</span>
 <!-- /Public Remark -->
 
 
