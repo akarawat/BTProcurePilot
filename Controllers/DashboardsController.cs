@@ -326,6 +326,14 @@ public class DashboardsController : Controller
 
         using (var reader = command.ExecuteReader())
         {
+          // TODO: remove these column-existence guards once SP_GetMyPRReq's SELECT list includes revision_no/revision_dt_txt
+          bool hasRevisionNo = false;
+          bool hasRevisionDt = false;
+          for (int i = 0; i < reader.FieldCount; i++)
+          {
+            if (reader.GetName(i) == "revision_no") { hasRevisionNo = true; }
+            if (reader.GetName(i) == "revision_dt_txt") { hasRevisionDt = true; }
+          }
           while (reader.Read())
           {
             results.Add(new
@@ -349,7 +357,9 @@ public class DashboardsController : Controller
               remarkAuth = reader["remarkAuth"].ToString() != "" ? reader["remarkAuth"].ToString() : "",
 
               purpose_type = (Int32)reader["purpose_type"],
-              projectno = reader["projectno"].ToString() != "" ? reader["projectno"].ToString() : ""
+              projectno = reader["projectno"].ToString() != "" ? reader["projectno"].ToString() : "",
+              revision_no = hasRevisionNo ? Convert.ToInt32(reader["revision_no"]) : 0,
+              revision_dt_txt = hasRevisionDt ? reader["revision_dt_txt"].ToString() : ""
 
             });
           }
@@ -382,6 +392,14 @@ public class DashboardsController : Controller
 
         using (var reader = command.ExecuteReader())
         {
+          // TODO: remove these column-existence guards once SP_GetMyPRApproval's SELECT list includes revision_no/revision_dt_txt
+          bool hasRevisionNo = false;
+          bool hasRevisionDt = false;
+          for (int i = 0; i < reader.FieldCount; i++)
+          {
+            if (reader.GetName(i) == "revision_no") { hasRevisionNo = true; }
+            if (reader.GetName(i) == "revision_dt_txt") { hasRevisionDt = true; }
+          }
           while (reader.Read())
           {
             results.Add(new
@@ -397,7 +415,7 @@ public class DashboardsController : Controller
               count_reject = (Int32)reader["count_reject"],
               count_approved = (Int32)reader["count_approved"],
               pr_recvpono = reader["pr_recvpono"]?.ToString(),
-              
+
               pr_recvdt_txt = reader["pr_recvdt_txt"]?.ToString(),
 
               procure_remark = reader["procure_remark"].ToString() != "" ? reader["procure_remark"].ToString() : "",
@@ -416,7 +434,9 @@ public class DashboardsController : Controller
               appFlag = reader["appFlag"] != DBNull.Value ? (Int32)reader["appFlag"] : 0,
               appFlag2 = reader["appFlag2"] != DBNull.Value ? (Int32)reader["appFlag2"] : 0,
               countFlag = reader["countFlag"] != DBNull.Value ? (Int32)reader["countFlag"] : 0,
-              authFlag = reader["authFlag"] != DBNull.Value ? (Int32)reader["authFlag"] : 0
+              authFlag = reader["authFlag"] != DBNull.Value ? (Int32)reader["authFlag"] : 0,
+              revision_no = hasRevisionNo ? Convert.ToInt32(reader["revision_no"]) : 0,
+              revision_dt_txt = hasRevisionDt ? reader["revision_dt_txt"].ToString() : ""
 
             });
           }

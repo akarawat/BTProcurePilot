@@ -44,7 +44,8 @@ $(document).ready(function () {
         render: function (data, type, row) {
           let rfq_prefix = row.purpose_type == 3 ? "(RFQ)" : "";
           let proj_prefix = (row.projectno && row.projectno.length >= 3) ? "(P)" : "";
-          return `<span class="badge rounded-pill text-success me-1" onclick="javascript:OpenDetail('${row.prno}');" style="cursor:pointer">${rfq_prefix}${proj_prefix}${data}</span>`;
+          let revision_txt = row.revision_no > 0 ? ` <span class="text-danger">[Rev:${row.revision_no}]</span>` : "";
+          return `<span class="badge rounded-pill text-success me-1" onclick="javascript:OpenDetail('${row.prno}');" style="cursor:pointer">${rfq_prefix}${proj_prefix}${data}</span>${revision_txt}`;
         }
       },
       {
@@ -142,8 +143,20 @@ document.getElementById("btnExport").addEventListener("click", async () => {
     await exportToExcel();
   }
 });
-const formattedDateTime = formatDateTime(now);
+function formatDateTime(date) {
+  const pad = (num) => num.toString().padStart(2, '0');
+
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1);
+  const year = date.getFullYear();
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+
+  return `${day}-${month}-${year} ${hours}${minutes}${seconds}`;
+}
 async function exportToExcel() {
+  const formattedDateTime = formatDateTime(new Date());
   let emp_code = 'Procurement';
 
   const response = await fetch(`/CTLAdmin/GetAllPRData`);
@@ -192,7 +205,8 @@ async function exportToExcel() {
   const formattedPRNo = (row) => {
     let rfq = row.purpose_type == 3 ? "(RFQ)" : "";
     let proj = (row.projectno && row.projectno.length >= 3) ? "(P)" : "";
-    return `${rfq}${proj}${row.prno}`;
+    let revision = row.revision_no > 0 ? ` [Rev:${row.revision_no}]` : "";
+    return `${rfq}${proj}${row.prno}${revision}`;
   };
   const formattedTotalExp = (row) => {
     return parseFloat(row.total_exp).toLocaleString('en-US', {

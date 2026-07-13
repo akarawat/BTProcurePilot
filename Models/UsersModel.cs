@@ -517,6 +517,7 @@ namespace AspnetCoreMvcFull.Models
     public string appEmp2_txt { get; set; }
     public int? appFlag2 { get; set; }
     public string remarkEmp2 { get; set; }
+    public int revision_no { get; set; }
   }
   public class PRSuggVendorModel
   {
@@ -681,6 +682,8 @@ namespace AspnetCoreMvcFull.Models
     public decimal? total_disc { get; set; }
     public decimal? total_exp { get; set; }
     public string prcurrency { get; set; }
+    public int revision_no { get; set; }
+    public string revision_dt_txt { get; set; }
   }
   public class PROutputModel
   {

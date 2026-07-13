@@ -52,6 +52,7 @@
                 || currentPage.StartsWith("/CTLAdmin/PRNewRequest")
                 || currentPage.StartsWith("/CTLAdmin/ProcureDashboard")
                 || currentPage.StartsWith("/CTLAdmin/ProcureReport")
+                || currentPage.StartsWith("/CTLAdmin/RevisionTracking")
                 || currentPage.StartsWith("/CTLAdmin/PRApproval") ? " active open" : "")'>
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ri-home-smile-line"></i>
@@ -102,6 +103,12 @@
                 <li class='menu-item@(currentPage == "/CTLAdmin/PRNewRequest" ? " active" : "")'>
                     <a asp-controller="CTLAdmin" asp-action="PRNewRequest" class="menu-link">
                         <div>NEW REQUEST</div>
+                    </a>
+                </li>
+                <li class='menu-item@(currentPage == "/CTLAdmin/RevisionTracking" ? " active" : "")'>
+                    <a asp-controller="CTLAdmin" asp-action="RevisionTracking" class="menu-link">
+                        <i class="menu-icon ri-history-line"></i>
+                        <div>Revision Tracking</div>
                     </a>
                 </li>
                 @if (sUROLEADMIN == "1" || sUROLEADMIN == "91")

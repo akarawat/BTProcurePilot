@@ -115,6 +115,14 @@ public class CTLAdminController : Controller
     return View();
   }
   [HttpGet]
+  public IActionResult RevisionTracking()
+  {
+    var isFullscreen = Request.Query["fullscreen"]; // หรือ TempData
+    ViewData["isFullscreen"] = isFullscreen.ToString().ToLower();
+    ViewData["UROLEADMIN"] = HttpContext.Session.GetString(SessionModel.UROLEADMIN);
+    return View();
+  }
+  [HttpGet]
   public JsonResult GetPRSummaryKPI(string start_dt, string end_dt, string dept)
   {
     IConfiguration config = new ConfigurationBuilder()
@@ -1919,6 +1927,14 @@ public class CTLAdminController : Controller
             model.total_disc = Convert.ToDecimal(reader["total_disc"]?.ToString());
             model.quo_return = Convert.ToInt32(reader["quo_return"]?.ToString());
             model.projectname = reader["projectname"]?.ToString();
+
+            // TODO: remove this column-existence guard once SP_GetPRDocno's SELECT list includes revision_no
+            bool hasRevisionNo = false;
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+              if (reader.GetName(i) == "revision_no") { hasRevisionNo = true; break; }
+            }
+            model.revision_no = hasRevisionNo ? Convert.ToInt32(reader["revision_no"]) : 0;
           }
         }
       }
@@ -2556,6 +2572,16 @@ public class CTLAdminController : Controller
     {
       con.Open();
       using SqlDataReader rdr = cmd.ExecuteReader();
+
+      // TODO: remove these column-existence guards once SP_GetProcureAllPR's SELECT list includes revision_no/revision_dt_txt
+      bool hasRevisionNo = false;
+      bool hasRevisionDt = false;
+      for (int i = 0; i < rdr.FieldCount; i++)
+      {
+        if (rdr.GetName(i) == "revision_no") { hasRevisionNo = true; }
+        if (rdr.GetName(i) == "revision_dt_txt") { hasRevisionDt = true; }
+      }
+
       while (rdr.Read())
       {
         prList.Add(new PRHeaderViewModel
@@ -2582,7 +2608,9 @@ public class CTLAdminController : Controller
 
           total_disc = rdr["total_disc"] != DBNull.Value ? Convert.ToDecimal(rdr["total_disc"]) : 0,
           total_exp = rdr["total_exp"] != DBNull.Value ? Convert.ToDecimal(rdr["total_exp"]) : 0,
-          prcurrency = rdr["prcurrency"].ToString()
+          prcurrency = rdr["prcurrency"].ToString(),
+          revision_no = hasRevisionNo ? Convert.ToInt32(rdr["revision_no"]) : 0,
+          revision_dt_txt = hasRevisionDt ? rdr["revision_dt_txt"].ToString() : ""
         });
       }
     }

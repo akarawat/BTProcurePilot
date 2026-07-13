@@ -81,6 +81,7 @@ $(document).ready(function () {
         $("#lblReqStatus").html(response.prstatus_txt + " " + strQuoReturn);
 
         $("#lblLastupdate").html(response.update_dt_txt);
+        $("#lblRevisionNo").html(response.revision_no);
         $("#pub_remark").text(response.pub_remark);
 
         $('#prcurrency').html(response.prcurrency);

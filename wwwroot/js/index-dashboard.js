@@ -39,7 +39,7 @@ $(document).ready(function () {
                 else if (row.prstatus == 7) color = 'bg-label-secondary';
                 else if (row.prstatus == 9) color = 'bg-label-secondary';
                 else color = 'bg-label-success';
-                return `<b>PR No:</b> ${rfq_prefix}${proj_prefix}${row.prno} <br/> <b>Req Date:</b> ${row.reqDate_txt} <br/> <span class="badge rounded-pill ${color} me-1" onclick="javascript:OpenDetail('${row.prno}');" style="cursor:pointer">${data} 
+                return `<b>PR No:</b> ${rfq_prefix}${proj_prefix}${row.prno} <br/> <b>Req Date:</b> ${row.reqDate_txt} <br/> <b>Revision:</b> ${row.revision_no} <br/> <span class="badge rounded-pill ${color} me-1" onclick="javascript:OpenDetail('${row.prno}');" style="cursor:pointer">${data}
                         </span>`;
                 //return `${row.prstatus}`;
               }
@@ -117,7 +117,7 @@ $(document).ready(function () {
                 else if (row.prstatus == 7) color = 'bg-label-secondary';
                 else if (row.prstatus == 9) color = 'bg-label-secondary';
                 else color = 'bg-label-success';
-                return `<b>PR No:</b>${rfq_prefix}${proj_prefix}${row.prno} <br/> <b>Req Date:</b> ${row.reqDate_txt} <br/><span class="badge rounded-pill ${color} me-1" onclick="javascript:OpenDetail('${row.prno}');" style="cursor:pointer">${data}</span>`;
+                return `<b>PR No:</b>${rfq_prefix}${proj_prefix}${row.prno} <br/> <b>Req Date:</b> ${row.reqDate_txt} <br/> <b>Revision:</b> ${row.revision_no} <br/><span class="badge rounded-pill ${color} me-1" onclick="javascript:OpenDetail('${row.prno}');" style="cursor:pointer">${data}</span>`;
                 //return `${row.prstatus}`;
               }
             },
