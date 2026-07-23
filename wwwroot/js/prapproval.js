@@ -1,4 +1,39 @@
-const flagProcureEmailSent = false; // ตัวแปรสถานะการส่งอีเมลไปยังฝ่ายจัดซื้อ 
+const flagProcureEmailSent = false; 
+function setDateInput(inputId, dateValue) {
+  if (dateValue) {
+    $('#' + inputId).val(dateValue.split('T')[0]);
+  } else {
+    $('#' + inputId).val('');
+  }
+}
+function formatNumber(value, fix) {
+  if (isNaN(value)) return '';
+
+  const rounded = parseFloat(value).toFixed(fix);
+  const parts = rounded.split(".");
+  const integerPart = parseInt(parts[0]).toLocaleString();
+  const decimalPart = parts[1];
+
+  return `${integerPart}.${decimalPart}`;
+}
+function saveEmailLog(mailFrom, mailTo, mailSubject) {
+  $.ajax({
+    url: '/CTLAdmin/SaveEmailLog',
+    type: 'PUT',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      mailFrom: mailFrom,
+      mailTo: mailTo,
+      subject: mailSubject
+    }),
+    success: function (res) {
+      console.log("Email log saved.");
+    },
+    error: function (err) {
+      console.error("Log error:", err);
+    }
+  });
+}
 $(document).ready(function () {
   // อ่านค่าจาก URL เช่น ?docno=PR25680723001
   const urlParams = new URLSearchParams(window.location.search);
@@ -167,6 +202,7 @@ $(document).ready(function () {
         setIndividualPR(response.empcode, response.prstatus);
         setVisibleProcureAdmin();
         setVisibleEmail();
+        setVisibleResubmit(response);
         loadPRHisRemark(docno);
         sMAILGROUPADMIN = $('#sMAILGROUPADMIN').val();
 
@@ -401,6 +437,56 @@ function setVisibleEmail() {
   }
 
 }
+function setVisibleResubmit(response) {
+  let loginEmpCode = $("#empCode").val();
+  // Scoped to Procurement reject only — this feature is Procurement (Reject) + Requester (Resend), no Approver involvement.
+  let isRejected = response.procure_flag == 7 || response.procure_flag == 9;
+
+  if (loginEmpCode == response.empcode && isRejected) {
+    document.getElementById("divBtnEditResubmit").style.display = "block";
+  } else {
+    document.getElementById("divBtnEditResubmit").style.display = "none";
+  }
+}
+$("#btnEditResubmit").click(function () {
+  $("#rdoApprox").prop('disabled', false);
+  $("#rdoApprox2").prop('disabled', false);
+  $("#approx_dt").prop('disabled', false);
+  $("#InvNo").prop('disabled', false);
+  $("#rdoPurpose1").prop('disabled', false);
+  $("#rdoPurpose2").prop('disabled', false);
+  $("#rdoPurpose3").prop('disabled', false);
+  $("#reference").prop('disabled', false);
+  $("#reason").prop('disabled', false);
+
+  document.getElementById("divBtnEditResubmit").style.display = "none";
+  document.getElementById("divBtnResubmitSave").style.display = "block";
+});
+$("#btnResubmitSave").click(function () {
+  if (!confirm('❔ Confirm to Resubmit this PR to Procurement?')) return;
+  const obj = {
+    prno: $("#prno").val(),
+    approx_type: $("input[name='rdoApprox']:checked").val(),
+    approx_dt: $("#approx_dt").val(),
+    invcreditno: $("#InvNo").val(),
+    purpose_type: $("input[name='rdoPurpose']:checked").val(),
+    ref_docs: $("#reference").val(),
+    pr_reason: $("#reason").val()
+  }
+  $.ajax({
+    url: '/CTLAdmin/ResubmitPR',
+    type: 'PUT',
+    data: obj,
+    success: function (response) {
+      if (response[0] === "0") {
+        let prno = $("#prno").val();
+        window.location.href = "?docno=" + prno + "&fullscreen=false";
+      } else {
+        alert("Resubmit failed");
+      }
+    }
+  });
+});
 function setIndividualPR(empCode, prstatus) {
   const myButton = document.getElementById('divBtnOwnerCancel');
   //myButton.style.display = 'none';

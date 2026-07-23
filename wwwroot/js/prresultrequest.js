@@ -1,5 +1,23 @@
 var docno;
 
+function setDateInput(inputId, dateValue) {
+  if (dateValue) {
+    $('#' + inputId).val(dateValue.split('T')[0]);
+  } else {
+    $('#' + inputId).val('');
+  }
+}
+function formatNumber(value, fix) {
+  if (isNaN(value)) return '';
+
+  const rounded = parseFloat(value).toFixed(fix);
+  const parts = rounded.split(".");
+  const integerPart = parseInt(parts[0]).toLocaleString();
+  const decimalPart = parts[1];
+
+  return `${integerPart}.${decimalPart}`;
+}
+
 $(document).ready(function () {
   // อ่านค่าจาก URL เช่น ?docno=PR25680723001
   const urlParams = new URLSearchParams(window.location.search);
@@ -22,8 +40,11 @@ $(document).ready(function () {
           location.href = "/";
         }
         console.log(response.prstatus);
-        if (response.prstatus >= 1) {
+        // Scoped to Procurement reject only — this feature is Procurement (Reject) + Requester (Resend), no Approver involvement.
+        let isRejected = response.procure_flag == 7 || response.procure_flag == 9;
+        if (response.prstatus >= 1 && !isRejected) {
           window.location.href = "/CTLAdmin/PRApproval?docno=" + docno;
+          return;
         }
 
 
@@ -117,6 +138,12 @@ $(document).ready(function () {
         loadPRHisRemark(docno);
         //$("#myForm :input").prop("disabled", true);
         //$("#myForm :textarea").prop("disabled", true);
+
+        let loginEmpCode = $("#empCode").val();
+        if (loginEmpCode == response.empcode && isRejected) {
+          document.getElementById("divBtnSubmit").style.display = "none";
+          document.getElementById("divBtnResubmitSave").style.display = "block";
+        }
 
       },
       error: function () {
@@ -598,6 +625,31 @@ $("#btnOwnerCancel").click(function () {
         window.location.href = "/CTLAdmin/PRResultRequest?docno=" + prno;
       } else {
         alert("Cancel failed");
+      }
+    }
+  });
+});
+$("#btnResubmitSave").click(function () {
+  if (!confirm('❔ Confirm to Resend this PR to Procurement?')) return;
+  const obj = {
+    prno: $("#prno").val(),
+    approx_type: $("input[name='rdoApprox']:checked").val(),
+    approx_dt: $("#approx_dt").val(),
+    invcreditno: $("#InvNo").val(),
+    purpose_type: $("input[name='rdoPurpose']:checked").val(),
+    ref_docs: $("#reference").val(),
+    pr_reason: $("#reason").val()
+  }
+  $.ajax({
+    url: '/CTLAdmin/ResubmitPR',
+    type: 'PUT',
+    data: obj,
+    success: function (response) {
+      if (response[0] === "0") {
+        let prno = $("#prno").val();
+        window.location.href = "/CTLAdmin/PRApproval?docno=" + prno;
+      } else {
+        alert("Resend failed");
       }
     }
   });

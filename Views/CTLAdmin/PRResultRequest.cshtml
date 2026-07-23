@@ -1001,9 +1001,14 @@
     <div class="col-md-2">
         <button type="button" class="btn btn-info" onclick="SavePRHeader(0)" style="display:none">Save Draft</button>
     </div>
-    <div class="col-md-2">
-        <button type="button" class="btn btn-success" onclick="SavePRHeader(1)">Submit</button>
-        <span id="lblNotics">&nbsp;&nbsp;</span>
+    <div class="col-md-3">
+        <span id="divBtnSubmit">
+            <button type="button" class="btn btn-success" id="btnSubmitPR" onclick="SavePRHeader(1)">Submit</button>
+            <span id="lblNotics">&nbsp;&nbsp;</span>
+        </span>
+        <span id="divBtnResubmitSave" style="display:none">
+            <button class="btn btn-success" id="btnResubmitSave" type="button"><i class="ri-send-plane-line"></i> Resend to Procurement</button>
+        </span>
     </div>
 </div>
 
@@ -1125,6 +1130,6 @@
     <script src="~/js/datatables.js"></script>
     <script src="~/js/datatables.min.js"></script>
 
-    <script src="~/js/prresultrequest.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
-    <script src="~/js/prrequest_action.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+    <script src="~/js/prresultrequest.js?v=@DateTime.Now.ToString("ddMMyyyyHHmmss")"></script>
+    <script src="~/js/prrequest_action.js?v=@DateTime.Now.ToString("ddMMyyyyHHmmss")"></script>
 }

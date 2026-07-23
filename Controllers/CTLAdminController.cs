@@ -2472,6 +2472,30 @@ public class CTLAdminController : Controller
     return Json(new string[] { result > 0 ? "0" : "0", "Updated" });
   }
   [HttpPut]
+  public JsonResult ResubmitPR(PRHeaderModel obj)
+  {
+    IConfiguration config = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json")
+        .Build();
+
+    using SqlConnection con = new SqlConnection(config.GetConnectionString("BtProcureConn"));
+    con.Open();
+
+    SqlCommand cmd = new SqlCommand("SP_ResubmitPRHeader", con);
+    cmd.CommandType = CommandType.StoredProcedure;
+    cmd.Parameters.AddWithValue("@prno", obj.prno ?? "");
+    cmd.Parameters.AddWithValue("@approx_type", obj.approx_type ?? (object)DBNull.Value);
+    cmd.Parameters.AddWithValue("@approx_dt", obj.approx_dt ?? (object)DBNull.Value);
+    cmd.Parameters.AddWithValue("@invcreditno", obj.invcreditno ?? "");
+    cmd.Parameters.AddWithValue("@purpose_type", obj.purpose_type ?? (object)DBNull.Value);
+    cmd.Parameters.AddWithValue("@ref_docs", obj.ref_docs ?? "");
+    cmd.Parameters.AddWithValue("@pr_reason", obj.pr_reason ?? "");
+
+    int result = cmd.ExecuteNonQuery();
+    return Json(new string[] { result > 0 ? "0" : "0", "Resubmitted" });
+  }
+  [HttpPut]
   public JsonResult UpdatePRCodeLog(PRHeaderModel obj)
   {
     IConfiguration config = new ConfigurationBuilder()

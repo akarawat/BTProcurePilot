@@ -76,7 +76,24 @@ namespace AspnetCoreMvcFull
       });
 
       app.UseHttpsRedirection();
-      app.UseStaticFiles();
+      app.UseStaticFiles(new StaticFileOptions
+      {
+        OnPrepareResponse = ctx =>
+        {
+          // Page-specific JS (prapproval.js, prresultrequest.js, etc.) changes often
+          // during development and is only cache-busted via a manual ?v= query string
+          // on the <script> tag. Tell every cache layer (browser, IIS Express kernel
+          // cache) to never serve a stale copy, regardless of that query string.
+          // Minified vendor libraries (jquery.min.js, datatables.min.js, ...) are
+          // excluded since they're stable and safe to cache normally.
+          if (ctx.File.Name.EndsWith(".js") && !ctx.File.Name.EndsWith(".min.js"))
+          {
+            ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            ctx.Context.Response.Headers["Pragma"] = "no-cache";
+            ctx.Context.Response.Headers["Expires"] = "0";
+          }
+        }
+      });
       app.UseRouting();
       app.UseSession(); //19/03/2021
 

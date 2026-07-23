@@ -1,3 +1,8 @@
 ﻿2026-01-10 08:50:27 | Log mail -> thitima.l@BerninaThailand.com;sopa.c@berninathailand.com;sakulchai.p@berninathailand.com;tuchpoom.j@berninathailand.com;sakulchai.p@berninathailand.com | Send 203
 2026-01-10 08:57:00 | Log mail -> sakulchai.p@berninathailand.com | Send 101
 2026-01-10 08:58:15 | Log mail -> sakulchai.p@berninathailand.com | Send 204.1
+2026-07-15 15:17:21 | Log mail 420-2607169 -> sakulchai.p@berninathailand.com | Send 101
+2026-07-15 15:22:18 | Log mail 420-2607169 -> sakulchai.p@berninathailand.com | Send 203
+2026-07-15 15:22:43 | Log mail 420-2607170 -> sakulchai.p@berninathailand.com | Send 101
+2026-07-15 15:26:34 | Log mail 420-2607170 -> sakulchai.p@berninathailand.com | Send 203
+2026-07-15 15:47:10 | Log mail 420-2607169 -> sakulchai.p@berninathailand.com | Send 101

@@ -1,5 +1,23 @@
 let item_count;
-const flagProcureEmailSent = false; // ตัวแปรสถานะการส่งอีเมลไปยังฝ่ายจัดซื้อ 
+const flagProcureEmailSent = false; // ตัวแปรสถานะการส่งอีเมลไปยังฝ่ายจัดซื้อ
+function saveEmailLog(mailFrom, mailTo, mailSubject) {
+  $.ajax({
+    url: '/CTLAdmin/SaveEmailLog',
+    type: 'PUT',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      mailFrom: mailFrom,
+      mailTo: mailTo,
+      subject: mailSubject
+    }),
+    success: function (res) {
+      console.log("Email log saved.");
+    },
+    error: function (err) {
+      console.error("Log error:", err);
+    }
+  });
+}
 $(document).ready(function () {
   $('#approx_dt').on('change', function () {
     let selectedDate = new Date($(this).val());
