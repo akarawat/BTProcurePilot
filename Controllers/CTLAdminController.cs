@@ -123,6 +123,13 @@ public class CTLAdminController : Controller
     return View();
   }
   [HttpGet]
+  public IActionResult ApprovalCompleteReport()
+  {
+    var isFullscreen = Request.Query["fullscreen"]; // หรือ TempData
+    ViewData["isFullscreen"] = isFullscreen.ToString().ToLower();
+    return View();
+  }
+  [HttpGet]
   public JsonResult GetPRSummaryKPI(string start_dt, string end_dt, string dept)
   {
     IConfiguration config = new ConfigurationBuilder()

@@ -461,7 +461,86 @@ $("#btnEditResubmit").click(function () {
 
   document.getElementById("divBtnEditResubmit").style.display = "none";
   document.getElementById("divBtnResubmitSave").style.display = "block";
+
+  loadPRItemTable($("#prno").val(), true);
 });
+function editItem(id) {
+  $.ajax({
+    url: '/CTLAdmin/GetPRItemDetailById?id=' + id,
+    type: 'GET',
+    success: function (item) {
+      $("#edit_id").val(item.id);
+      $("#edit_item_btnumber").val(item.item_btnumber);
+      $("#edit_item_descript").val(item.item_descript);
+      $("#edit_item_model").val(item.item_model);
+      $("#edit_item_acccode").val(item.item_acccode);
+      $("#edit_item_costdep").val(item.item_costdep);
+      $("#edit_item_qty").val(item.item_qty);
+      $("#edit_item_unit").val(item.item_unit);
+      $("#edit_item_unitprice").val(item.item_unitprice);
+      $("#edit_item_amount").val(item.item_amount);
+      $("#edit_item_disc").val(item.item_disc);
+      new bootstrap.Modal(document.getElementById('editItemModal')).show();
+    }
+  });
+}
+function saveEditItem() {
+  if (!confirm('❔ Confirm to save Item detail.')) { return; }
+  const obj = {
+    id: $("#edit_id").val(),
+    item_btnumber: $("#edit_item_btnumber").val(),
+    item_descript: $("#edit_item_descript").val(),
+    item_model: $("#edit_item_model").val(),
+    item_acccode: $("#edit_item_acccode").val(),
+    item_costdep: $("#edit_item_costdep").val(),
+    item_qty: parseFloat($("#edit_item_qty").val()),
+    item_unit: $("#edit_item_unit").val(),
+    item_unitprice: $("#edit_item_unitprice").val(),
+    item_amount: parseFloat($("#edit_item_amount").val()),
+    item_disc: parseFloat($("#edit_item_disc").val())
+  };
+
+  $.ajax({
+    url: '/CTLAdmin/UpdatePRItemDetail',
+    type: 'POST',
+    data: obj,
+    success: function (res) {
+      if (res[0] === "0") {
+        $('#editItemModal').modal('hide');
+        loadPRItemTable($("#prno").val(), true);
+      } else {
+        alert("❌ Update Failed: " + res[1]);
+      }
+    }
+  });
+}
+function deleteItem(id) {
+  if (confirm("❌ Are you sure to delete this item?")) {
+    $.ajax({
+      url: '/CTLAdmin/DeletePRItemDetailById',
+      type: 'POST',
+      data: { id: id },
+      success: function (response) {
+        if (response[0] === "0") {
+          loadPRItemTable($("#prno").val(), true);
+        } else {
+          alert("Delete failed");
+        }
+      }
+    });
+  }
+}
+function CalTotalAmountModal() {
+  let uqty = $("#edit_item_qty").val();
+  let uprice = $("#edit_item_unitprice").val();
+  let disc = $("#edit_item_disc").val();
+  if (disc == '') { disc = 0; }
+  if (uqty == '' || uprice == '') { $("#edit_item_amount").val(0); return; }
+  if (uqty == 0 || uprice == 0) { $("#edit_item_amount").val(0); return; }
+
+  let cal_total = (uqty * uprice).toFixed(2);
+  $("#edit_item_amount").val((cal_total - disc));
+}
 $("#btnResubmitSave").click(function () {
   if (!confirm('❔ Confirm to Resubmit this PR to Procurement?')) return;
   const obj = {
@@ -578,7 +657,7 @@ function loadSuggestedVendor(docno, suggItem) {
     }
   });
 }
-function loadPRItemTable(docno) {
+function loadPRItemTable(docno, editable) {
   $.ajax({
     url: '/CTLAdmin/GetPRItemDetailByDocno?prno=' + docno,
     type: 'GET',
@@ -590,6 +669,10 @@ function loadPRItemTable(docno) {
       $.each(data, function (i, row) {
         spnDisc += row.item_disc;
         sumTotal += row.item_amount;
+        let actionCell = editable ? `<td>
+              <i class="ri-edit-box-fill text-warning" onclick="editItem('${row.id}')" style="cursor:pointer; font-size: 24px;" title='Edit'></i>
+              <i class="ri-delete-bin-2-fill text-danger" onclick="deleteItem('${row.id}')" style="cursor:pointer; font-size: 24px;" title='Delete'></i>
+          </td>` : `<td></td>`;
         html += `<tr>
           <td>${row.item_btnumber}</td>
           <td>${row.item_descript}</td>
@@ -601,7 +684,7 @@ function loadPRItemTable(docno) {
           <td>${row.item_unitprice} ` + currency + `</td>
           <td align='right'>${row.item_disc}</td>
           <td align='right'>${row.item_amount}</td>
-          
+          ${actionCell}
         </tr>`;
       });
       $("#spnDisc").html(formatNumber(spnDisc, 2));
@@ -694,24 +777,6 @@ function loadFileAttachTable(prid) {
     }
   });
 }
-function deleteItem(id) {
-  if (confirm("❌ Are you sure to delete this item?")) {
-    $.ajax({
-      url: '/CTLAdmin/DeletePRItemDetailById',
-      type: 'POST',
-      data: { id: id },
-      success: function (response) {
-        if (response[0] === "0") {
-          //-->alert("✔ Item deleted successfully");
-          let prno = $("#prno").val();
-          loadPRItemTable(prno);
-        } else {
-          alert("Delete failed");
-        }
-      }
-    });
-  }
-}
 function deleteFileItem_Bak(id, filepath) {
   if (confirm("❌ Are you sure to delete this file item?")) {
     $.ajax({
@@ -775,60 +840,6 @@ function deleteFileItem(id, filepath) {
   });
 }
 
-function editItem(id) {
-
-  $.ajax({
-    url: '/CTLAdmin/GetPRItemDetailById?id=' + id,
-    type: 'GET',
-    success: function (item) {
-      $("#edit_id").val(item.id);
-      $("#edit_item_btnumber").val(item.item_btnumber);
-      $("#edit_item_descript").val(item.item_descript);
-      $("#edit_item_model").val(item.item_model);
-      $("#edit_item_acccode").val(item.item_acccode);
-      $("#edit_item_costdep").val(item.item_costdep);
-      $("#edit_item_qty").val(item.item_qty);
-      $("#edit_item_unit").val(item.item_unit);
-      $("#edit_item_unitprice").val(item.item_unitprice);
-      $("#edit_item_amount").val(item.item_amount);
-      new bootstrap.Modal(document.getElementById('editItemModal')).show();
-
-    }
-  });
-
-
-}
-
-function saveEditItem() {
-  if (!confirm('Confirm to save Item detail.')) { return; }
-  const obj = {
-    id: $("#edit_id").val(),
-    item_btnumber: $("#edit_item_btnumber").val(),
-    item_descript: $("#edit_item_descript").val(),
-    item_model: $("#edit_item_model").val(),
-    item_acccode: $("#edit_item_acccode").val(),
-    item_costdep: $("#edit_item_costdep").val(),
-    item_qty: parseFloat($("#edit_item_qty").val()),
-    item_unit: $("#edit_item_unit").val(),
-    item_unitprice: $("#edit_item_unitprice").val(),
-    item_amount: parseFloat($("#edit_item_amount").val())
-  };
-
-  $.ajax({
-    url: '/CTLAdmin/UpdatePRItemDetail',
-    type: 'POST',
-    data: obj,
-    success: function (res) {
-      if (res[0] === "0") {
-        //-->alert("✔ Updated Successfully");
-        $('#editItemModal').modal('hide');
-        loadPRItemTable($("#prno").val()); // โหลดใหม่
-      } else {
-        alert("❌ Update Failed: " + res[1]);
-      }
-    }
-  });
-}
 function ClearSupplierData(sucgid) {
   let id_supp1 = $("#sucgid" + sucgid).val();
   if (id_supp1 == '') return;

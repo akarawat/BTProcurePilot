@@ -1,0 +1,67 @@
+@{
+    var isFullscreen = ViewData["isFullscreen"]?.ToString() == "true";
+    var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
+    var menuFixed = isFullscreen ? "" : "menu-fixed";
+    var isNavbar = !isFullscreen;
+    var isMenu = !isFullscreen;
+    var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
+    ViewData["isMenu"] = isMenu;
+    ViewData["menuFixed"] = menuFixed;
+    ViewData["isNavbar"] = isNavbar;
+    ViewData["navbarType"] = navbarType;
+    ViewData["Title"] = "Approval Complete Report";
+}
+
+@section PageStyles {
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+    <link href="~/css/datatables.css" rel="stylesheet" />
+    <link href="~/css/usersetting.css" rel="stylesheet" />
+    <link href="~/css/bt-theme.css" rel="stylesheet" />
+}
+
+<div class="card bt-card mb-4">
+    <div class="bt-page-header">
+        <h5><i class="ri-checkbox-multiple-line"></i> @ViewData["Title"]</h5>
+    </div>
+
+    <div class="table-responsive text-nowrap">
+        <table id="bindDataTable" class="table table-bordered table-hover" width="100%">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Date</th>
+                    <th>PR No</th>
+                    <th>PO No</th>
+                    <th>Proc.Receive</th>
+                    <th>Update Date</th>
+                    <th>Status</th>
+                    <th>Approval 1</th>
+                    <th>Approval 1/2</th>
+                    <th>Manager</th>
+                    <th>MD.</th>
+                    <th>Discount</th>
+                    <th>Total</th>
+                    <th>Currency</th>
+                    <th>Project No</th>
+                    <th>Requester</th>
+                    <th>Reason</th>
+                    <th>Approx Date</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="layout-demo-info">
+    <button class="btn btn-outline-secondary" id="toggleFullscreenBtn">
+        <i class="bx bx-fullscreen"></i> @strCaption
+    </button>
+</div>
+
+@section PageScripts {
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+    <script src="~/js/approvalcompletereport.js?v=@DateTime.Now.ToString("ddMMyyyyHHmmss")"></script>
+}

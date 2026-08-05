@@ -105,6 +105,8 @@ function SaveEditVen() {
   var VenCode = $("#VenCode").val();
   var VenName = $("#VenName").val();
   var Vencurrency = $("#Vencurrency").val();
+  console.log(VenCodeTmp + ' | ' + VenCode + ' | ' + VenName + ' | ' + Vencurrency);
+  if (VenCodeTmp == '' || VenName == '') return;
   if (VenCodeTmp == '' || VenCode == '' || VenName == '') return;
   if (!confirm('Confirm update vendor code "[' + VenCode + '] ' + VenName + '" ❔')) return;
   const obj = {

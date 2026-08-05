@@ -53,6 +53,7 @@
                 || currentPage.StartsWith("/CTLAdmin/ProcureDashboard")
                 || currentPage.StartsWith("/CTLAdmin/ProcureReport")
                 || currentPage.StartsWith("/CTLAdmin/RevisionTracking")
+                || currentPage.StartsWith("/CTLAdmin/ApprovalCompleteReport")
                 || currentPage.StartsWith("/CTLAdmin/PRApproval") ? " active open" : "")'>
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ri-home-smile-line"></i>
@@ -117,6 +118,12 @@
                     <a asp-controller="CTLAdmin" asp-action="ProcureReport" class="menu-link">
                       <i class="menu-icon ri-settings-line"></i>
                         <div>Procure. Report</div>
+                    </a>
+                  </li>
+                  <li class='menu-item@(currentPage == "/CTLAdmin/ApprovalCompleteReport" ? " active" : "")'>
+                    <a asp-controller="CTLAdmin" asp-action="ApprovalCompleteReport" class="menu-link">
+                      <i class="menu-icon ri-checkbox-multiple-line"></i>
+                        <div>Approval Complete Report</div>
                     </a>
                   </li>
                 }

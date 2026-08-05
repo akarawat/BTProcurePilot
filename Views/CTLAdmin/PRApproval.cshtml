@@ -428,10 +428,12 @@
                               <th>Unit Price</th>
                               <th>Discount</th>
                               <th>Total amount</th>
+                              <th>Action</th>
                           </tr>
                       </thead>
                       <tbody class="table-border-bottom-0">
                           <tr>
+                              <td></td>
                               <td></td>
                               <td></td>
                               <td></td>
@@ -456,7 +458,7 @@
                                     Discount &nbsp;&nbsp;&nbsp; <span id="spnDisc" class="textBold"></span>
                               </td>
                               <td>Total</td>
-                                <td align="right"><span id="spnTotal" class="textBold"></span></td>
+                                <td align="right" colspan="2"><span id="spnTotal" class="textBold"></span></td>
                             </tr>
                       </tfoot>
                   </table>
@@ -763,6 +765,82 @@
     </div>
 </div>
 
+<!-- Modal Edit Item (only reachable via Edit & Resubmit) -->
+<div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="editItemModalLabel">Edit PR Item Detail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit_id" />
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>BT Number</label>
+                        <input class="form-control" type="text" id="edit_item_btnumber" />
+                    </div>
+                    <div class="col-md-4">
+                        <label>Description / Spec</label>
+                        <input class="form-control" type="text" id="edit_item_descript" />
+                    </div>
+                    <div class="col-md-4">
+                        <label>Brand / Model</label>
+                        <input class="form-control" type="text" id="edit_item_model" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>Account Code</label>
+                        <input class="form-control" type="text" id="edit_item_acccode" />
+                    </div>
+                    <div class="col-md-4">
+                        <label>Cost Dept</label>
+                        <input class="form-control" type="text" id="edit_item_costdep" />
+                    </div>
+                    <div class="col-md-4">
+                        <label>Quantity</label>
+                        <input class="form-control" type="number" id="edit_item_qty" onchange="CalTotalAmountModal();" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>Unit Price</label>
+                        <input class="form-control" type="text" id="edit_item_unitprice" onchange="CalTotalAmountModal();" />
+                    </div>
+                    <div class="col-md-4">
+                        <label>Unit Name</label>
+                        <input class="form-control" type="text" id="edit_item_unit" />
+                    </div>
+                    <div class="col-md-4">
+                        <label>Discount</label>
+                        <input class="form-control" type="number" id="edit_item_disc" onchange="CalTotalAmountModal();" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <div class="form-floating form-floating-outline mb-6">
+                            <input class="form-control" type="number" id="edit_item_amount" />
+                            <label for="edit_item_amount">Total Amount</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="text-end">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="button" class="btn btn-warning" onclick="saveEditItem()">Save Changes</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section PageScripts {
     @* <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script> *@
@@ -774,6 +852,6 @@
 
     @* <script src="~/js/site.js?v=@DateTime.Now.ToString("ddMMyyyyHHmmss")"></script> *@
     @* <script src="~/js/prrequest_action.js"></script> *@
-        <script src="~/js/prapproval.js?v=@DateTime.Now.ToString("ddMMyyyyHHmmss")_001"></script>
+        <script src="~/js/prapproval-v2.js?v=@DateTime.Now.ToString("ddMMyyyyHHmmss")"></script>
 }
 
