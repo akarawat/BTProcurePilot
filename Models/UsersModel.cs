@@ -384,9 +384,9 @@ namespace AspnetCoreMvcFull.Models
   }
   public class VenModel
   {
+    public Guid? id { get; set; }
     public string VenName { get; set; }
     public string VenCode { get; set; }
-    public string VenCodeTmp { get; set; }
     public string Vencurrency { get; set; }
   }
   public class BtItemPartModel

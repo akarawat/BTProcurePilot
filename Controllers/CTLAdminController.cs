@@ -664,7 +664,7 @@ public class CTLAdminController : Controller
       con.Open();
       SqlCommand cmnd = new SqlCommand("SP_SaveVenCode", con);
       cmnd.CommandType = CommandType.StoredProcedure;
-      cmnd.Parameters.AddWithValue("@VenCodeTmp", SqlDbType.VarChar).Value = obj.VenCodeTmp == null ? "" : obj.VenCodeTmp;
+      cmnd.Parameters.AddWithValue("@id", SqlDbType.UniqueIdentifier).Value = obj.id ?? Guid.Empty;
       cmnd.Parameters.AddWithValue("@VenCode", SqlDbType.VarChar).Value = obj.VenCode == null ? "" : obj.VenCode;
       cmnd.Parameters.AddWithValue("@VenName", SqlDbType.NVarChar).Value = obj.VenName == null ? "" : obj.VenName;
       cmnd.Parameters.AddWithValue("@Vencurrency", SqlDbType.VarChar).Value = obj.Vencurrency == null ? "" : obj.Vencurrency;
@@ -706,7 +706,7 @@ public class CTLAdminController : Controller
       con.Open();
       SqlCommand cmnd = new SqlCommand("SP_DeleteVenCode", con);
       cmnd.CommandType = CommandType.StoredProcedure;
-      cmnd.Parameters.AddWithValue("@VenCode", SqlDbType.VarChar).Value = obj.VenCode == null ? "" : obj.VenCode;
+      cmnd.Parameters.AddWithValue("@id", SqlDbType.UniqueIdentifier).Value = obj.id ?? Guid.Empty;
       cmnd.Parameters.Add("@flag", SqlDbType.Int);
       cmnd.Parameters["@flag"].Direction = ParameterDirection.Output;
       cmnd.ExecuteNonQuery();
@@ -942,10 +942,17 @@ public class CTLAdminController : Controller
 
               using (var reader = command.ExecuteReader())
               {
+                  // TODO: remove this column-existence guard once Sql/AddPK_Vendor.sql has run everywhere
+                  bool hasId = false;
+                  for (int i = 0; i < reader.FieldCount; i++)
+                  {
+                      if (reader.GetName(i) == "id") { hasId = true; break; }
+                  }
                   while (reader.Read())
                   {
                       results.Add(new
                       {
+                          id = hasId ? reader["id"].ToString() : "",
                           VenName = reader["VenName"]?.ToString(),
                           VenCode = reader["VenCode"]?.ToString(),
                           Vencurrency = reader["Vencurrency"]?.ToString()

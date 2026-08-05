@@ -27,7 +27,7 @@ $(document).ready(function () {
             render: function (data, type, row) {
               let txtlink;
               txtlink = `
-              <span class="badge rounded-pill text-success me-1" onclick="javascript:EditVendor('${data}','${row.VenCode}','${row.Vencurrency}');" style="cursor:pointer">${data}</span>`;
+              <span class="badge rounded-pill text-success me-1" onclick="javascript:EditVendor('${data}','${row.VenCode}','${row.Vencurrency}','${row.id}');" style="cursor:pointer">${data}</span>`;
               return txtlink;
             }
           },
@@ -73,14 +73,15 @@ $("#btnModalClose").click(function () {
 //  });
 //});
 function DeleteVen() {
+  var VenId = $("#VenId").val();
   var VenCode = $("#VenCode").val();
   var VenName = $("#VenName").val();
-  if (VenCode == '') return;
+  if (VenId == '') return;
   if (!confirm('❌ Confirm delete vendor code "[' + VenCode + '] ' + VenName + '" ❔')) return;
   $.ajax({
     url: "/CTLAdmin/DelVendor",
     type: "DELETE",
-    data: { VenCode: VenCode },
+    data: { id: VenId },
     success: function (response) {
       console.log(response);
       location.href = "/CTLAdmin/VendorList";
@@ -90,27 +91,27 @@ function DeleteVen() {
     }
   });
 }
-function EditVendor(VenName, VenCode, Vencurrency) {
+function EditVendor(VenName, VenCode, Vencurrency, VenId) {
   document.getElementById("btnVenEdit").style.display = "block";
   document.getElementById("btnVenDel").style.display = "block";
   //console.log(ActiveTo);
-  $("#VenCodeTmp").val(VenCode);
+  $("#VenId").val(VenId);
   $("#VenCode").val(VenCode);
   $("#VenName").val(VenName);
   $("#Vencurrency").val(Vencurrency);
 }
 
 function SaveEditVen() {
-  var VenCodeTmp = $("#VenCodeTmp").val();
+  var VenId = $("#VenId").val();
   var VenCode = $("#VenCode").val();
   var VenName = $("#VenName").val();
   var Vencurrency = $("#Vencurrency").val();
-  console.log(VenCodeTmp + ' | ' + VenCode + ' | ' + VenName + ' | ' + Vencurrency);
-  if (VenCodeTmp == '' || VenName == '') return;
-  if (VenCodeTmp == '' || VenCode == '' || VenName == '') return;
+  console.log(VenId + ' | ' + VenCode + ' | ' + VenName + ' | ' + Vencurrency);
+  if (VenId == '' || VenName == '') return;
+  //if (VenId == '' || VenCode == '' || VenName == '') return;
   if (!confirm('Confirm update vendor code "[' + VenCode + '] ' + VenName + '" ❔')) return;
   const obj = {
-    VenCodeTmp: VenCodeTmp,
+    id: VenId,
     VenCode: VenCode,
     VenName: VenName,
     Vencurrency: Vencurrency
@@ -133,7 +134,7 @@ $("#btnSubmit").click(function () {
   var VenCode = $("#VenCode").val();
   var VenName = $("#VenName").val();
   var Vencurrency = $("#Vencurrency").val();
-  if (VenCode == '' || VenName == '' || Vencurrency == '') return;
+  if (VenName == '' || Vencurrency == '') return;
   if (!confirm('Confirm add new vendor code "[' + VenCode + '] ' + VenName + '" ❔')) return;
   const obj = {
     VenCode: VenCode,
