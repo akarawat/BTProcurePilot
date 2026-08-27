@@ -181,8 +181,8 @@
                 </div>
                 <div id="divProcControl" style="display:none">
                     <br />
-                    <span class="text-start"><label class="btn btn-secondary" id="btnSndQuotation" disabled>Send Quotation</label></span> 
-                    <span class="text-end"><label class="btn btn-success" id="btnProcApprove" disabled>PROC. SAVE</label></span>
+                    <span class="text-start"><label class="btn btn-secondary" id="btnSndQuotation" disabled title="Procure. Inform requester send Quotation to Supplier">Inform Send Quotation</label></span> 
+                    <span class="text-end"><label class="btn btn-success" id="btnProcApprove" disabled title="Procure. Inform requester received tis this PR.">PROC. SUBMIT</label></span>
                   </div>
             </div>
         </div>
@@ -516,6 +516,7 @@
                     <input type="hidden" id="lblReqMail" name="lblReqMail" />
                     <input type="hidden" id="approvalStatus" />
                     <input type="hidden" id="approve_step" />
+                    <img id="imgSigRequester" class="bt-signature-img" style="display:none" alt="Signature" />
                     Requester : <label class="form-label text-info" id="lblRequester">-</label><br />
                     Require date: <label class="form-label text-info" id="lblReqDate">-</label><br />
                 </div>
@@ -533,6 +534,7 @@
                   <div class="row">
                     <div class="col-md-12">
                       <input type="hidden" id="lblAppEmpMail" name="lblAppEmpMail" />
+                      <img id="imgSigAppEmp" class="bt-signature-img" style="display:none" alt="Signature" />
                       <label id="lblAppEmpDisp" name="lblAppEmpDisp"></label>
                       <div class="form-check">
                           <input class="form-check-input" type="radio" name="rdoAppEmp" id="rdo1AppEmp" onclick="setPrStatus2App(1, 1, 1)" value="1" >
@@ -556,6 +558,7 @@
                     <div class="col-md-12">
                       <input type="hidden" id="lblAppEmp2Mail" name="lblAppEmp2Mail" />
                       <label class="form-label text-secondary" id="lblTxtEmp2">Approval 2 (Option)</label>
+                      <img id="imgSigAppEmp2" class="bt-signature-img" style="display:none" alt="Signature" />
                       <label id="lblAppEmp2Disp" name="lblAppEmp2Disp"></label>
                       <div class="form-check">
                           <input class="form-check-input" type="radio" name="rdoAppEmp2" id="rdo1AppEmp2" onclick="setPrStatus2App(1, 1, 2)" value="1" >
@@ -579,6 +582,7 @@
                 <input type="hidden" id="countFlag" />
                 <div class="card-body">
                     <input type="hidden" id="lblCountEmpMail" name="lblCountEmpMail" />
+                    <img id="imgSigCountEmp" class="bt-signature-img" style="display:none" alt="Signature" />
                     <label id="lblCountEmpDisp" name="lblCountEmpDisp"></label>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="rdoCountEmp" id="rdo1CountEmp" onclick="setPrStatus(2, 1)" value="1" >
@@ -600,6 +604,7 @@
                 <input type="hidden" id="authFlag" />
                 <div class="card-body">
                     <input type="hidden" id="lblAuthEmpMail" name="lblAuthEmpMail" />
+                    <img id="imgSigAuthEmp" class="bt-signature-img" style="display:none" alt="Signature" />
                     <label id="lblAuthEmpDisp" name="lblAuthEmpDisp"></label>
 
                     <div class="form-check">
@@ -852,6 +857,6 @@
 
     @* <script src="~/js/site.js?v=@DateTime.Now.ToString("ddMMyyyyHHmmss")"></script> *@
     @* <script src="~/js/prrequest_action.js"></script> *@
-        <script src="~/js/prapproval-v2.js?v=@DateTime.Now.ToString("ddMMyyyyHHmmss")"></script>
+        <script src="~/js/prapproval-v3.js?v=@DateTime.Now.ToString("ddMMyyyyHHmmss")"></script>
 }
 

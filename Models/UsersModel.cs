@@ -699,6 +699,11 @@ namespace AspnetCoreMvcFull.Models
     public List<PRItemDetailModel> DetailList { get; set; }
     public List<PRSuggVendorModel> VendorList { get; set; }
     public List<FileAttachedModel> AttachList { get; set; }
+    public string RequesterSignature { get; set; }
+    public string ApprovalSignature { get; set; }
+    public string Approval2Signature { get; set; }
+    public string CountersignSignature { get; set; }
+    public string AuthorizeSignature { get; set; }
   }
   public class EmailLogRequestModel
   {

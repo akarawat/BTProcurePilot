@@ -25,6 +25,7 @@ public class CTLAdminController : Controller
   //public IActionResult PRDRecordSheet() => View();
   private readonly IWebHostEnvironment _env;
   private readonly IConfiguration _config;
+  private readonly IHttpClientFactory _httpClientFactory;
   DataAccess daAccess = new DataAccess();
   [HttpGet]
   public IActionResult AccCodeList()
@@ -2306,10 +2307,69 @@ public class CTLAdminController : Controller
 
     return Json(result);
   }
-  public CTLAdminController(IWebHostEnvironment env, IConfiguration config)
+  public CTLAdminController(IWebHostEnvironment env, IConfiguration config, IHttpClientFactory httpClientFactory)
   {
     _env = env;
     _config = config;
+    _httpClientFactory = httpClientFactory;
+  }
+
+  // Server-side proxy: looks up the SAM account for an emp_code, then fetches
+  // that person's registered signature image from the DigitalSign API.
+  // The DigitalSign ApiKey never reaches the browser — only this base64 image does.
+  [HttpGet]
+  public async Task<JsonResult> GetSignatureImage(string empcode)
+  {
+    string image = await GetSignatureBase64Async(empcode);
+    return Json(new { image });
+  }
+
+  // Shared by GetSignatureImage (PRApproval, AJAX) and PrintPR (server-rendered).
+  private async Task<string> GetSignatureBase64Async(string empcode)
+  {
+    if (string.IsNullOrWhiteSpace(empcode)) return null;
+
+    IConfiguration config = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json")
+        .Build();
+    string DBConn = config["ConnectionStrings:BtProcureConn"];
+
+    string samAcc = null;
+    using (SqlConnection con = new SqlConnection(DBConn))
+    {
+      con.Open();
+      using SqlCommand cmd = new SqlCommand("SP_GetEmpSamAccount", con);
+      cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.AddWithValue("@emp_code", empcode.Trim());
+      using SqlDataReader rdr = await cmd.ExecuteReaderAsync();
+      if (await rdr.ReadAsync())
+      {
+        samAcc = rdr["SAMACC"]?.ToString();
+      }
+    }
+
+    if (string.IsNullOrWhiteSpace(samAcc)) return null;
+
+    try
+    {
+      var apiKey = config["DigitalSignApi:ApiKey"] ?? "";
+      var client = _httpClientFactory.CreateClient("DigitalSign");
+      if (!string.IsNullOrEmpty(apiKey))
+        client.DefaultRequestHeaders.TryAddWithoutValidation("X-Api-Key", apiKey);
+
+      var response = await client.GetAsync($"/api/signature-registry/image/{samAcc.ToLower().Trim()}");
+      if (!response.IsSuccessStatusCode) return null;
+
+      var bytes = await response.Content.ReadAsByteArrayAsync();
+      if (bytes.Length == 0) return null;
+
+      return Convert.ToBase64String(bytes);
+    }
+    catch (Exception)
+    {
+      return null;
+    }
   }
 
   [HttpPost]
@@ -2658,7 +2718,7 @@ public class CTLAdminController : Controller
     }
     return Json(new { data = prList });
   }
-  public IActionResult PrintPR(string prno)
+  public async Task<IActionResult> PrintPR(string prno)
   {
     string UIDPRID = "";
     PRHeaderModel header = new PRHeaderModel();
@@ -2704,6 +2764,9 @@ public class CTLAdminController : Controller
             header.appEmp = reader["appEmp"]?.ToString();
             header.appDate = reader["appDate"] as DateTime?;
             header.appFlag = reader["appFlag"] as int?;
+            header.appEmp2 = reader["appEmp2"]?.ToString();
+            header.appDate2 = reader["appDate2"] as DateTime?;
+            header.appFlag2 = reader["appFlag2"] as int?;
             header.countEmp = reader["countEmp"]?.ToString();
             header.countDate = reader["countDate"] as DateTime?;
             header.countFlag = reader["countFlag"] as int?;
@@ -2725,6 +2788,8 @@ public class CTLAdminController : Controller
             
             header.appEmp_txt = reader["appEmp_txt"]?.ToString();
             header.appDate_txt = reader["appDate_txt"]?.ToString();
+            header.appEmp2_txt = reader["appEmp2_txt"]?.ToString();
+            header.appDate2_txt = reader["appDate2_txt"]?.ToString();
             header.countEmp_txt = reader["countEmp_txt"]?.ToString();
             header.countDate_txt = reader["countDate_txt"]?.ToString();
             header.authEmp_txt = reader["authEmp_txt"]?.ToString();
@@ -2844,12 +2909,19 @@ public class CTLAdminController : Controller
 
     //--> End of Attach File
 
+    // Same show-condition as PRApproval: Requester once submitted, each
+    // approval step once its own flag is 1.
     var viewModel = new PRPrintViewModel
     {
       PRHeader = header,
       DetailList = detail,
       VendorList = resultVend,
-      AttachList = listAttach
+      AttachList = listAttach,
+      RequesterSignature = header.prstatus >= 1 ? await GetSignatureBase64Async(header.empcode) : null,
+      ApprovalSignature = header.appFlag == 1 ? await GetSignatureBase64Async(header.appEmp) : null,
+      Approval2Signature = header.appFlag2 == 1 ? await GetSignatureBase64Async(header.appEmp2) : null,
+      CountersignSignature = header.countFlag == 1 ? await GetSignatureBase64Async(header.countEmp) : null,
+      AuthorizeSignature = header.authFlag == 1 ? await GetSignatureBase64Async(header.authEmp) : null
     };
 
     return View("PR_PrintReport", viewModel);

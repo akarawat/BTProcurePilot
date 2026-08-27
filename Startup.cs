@@ -14,6 +14,11 @@ namespace AspnetCoreMvcFull
       services.AddSession();
       services.AddHttpContextAccessor();
 
+      services.AddHttpClient("DigitalSign", client =>
+      {
+        client.BaseAddress = new Uri(Configuration["DigitalSignApi:BaseUrl"]);
+      });
+
       services.AddCors(options =>
       {
         options.AddPolicy(name: MyAllowSpecificOrigins,

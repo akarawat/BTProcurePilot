@@ -156,3 +156,11 @@
   font-weight: 500;
   border-top: none;
 }
+
+/* Digital signature image shown in the approval cards on PRApproval */
+.bt-signature-img {
+  max-height: 50px;
+  max-width: 140px;
+  margin-top: 0.35rem;
+  display: block;
+}

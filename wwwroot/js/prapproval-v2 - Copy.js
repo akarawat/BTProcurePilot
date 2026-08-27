@@ -203,6 +203,7 @@ $(document).ready(function () {
         setVisibleProcureAdmin();
         setVisibleEmail();
         setVisibleResubmit(response);
+        loadApprovalSignatures(response);
         loadPRHisRemark(docno);
         sMAILGROUPADMIN = $('#sMAILGROUPADMIN').val();
 
@@ -446,6 +447,37 @@ function setVisibleResubmit(response) {
     document.getElementById("divBtnEditResubmit").style.display = "block";
   } else {
     document.getElementById("divBtnEditResubmit").style.display = "none";
+  }
+}
+function loadSignature(empcode, imgId) {
+  if (!empcode) return;
+  $.ajax({
+    url: '/CTLAdmin/GetSignatureImage',
+    type: 'GET',
+    data: { empcode: empcode },
+    success: function (response) {
+      if (response && response.image) {
+        $('#' + imgId).attr('src', 'data:image/png;base64,' + response.image).show();
+      }
+    }
+  });
+}
+function loadApprovalSignatures(response) {
+  // Requester "signs" by submitting; show once the PR has left draft status.
+  if (response.prstatus >= 1) {
+    loadSignature(response.empcode, 'imgSigRequester');
+  }
+  if (response.appFlag == 1) {
+    loadSignature(response.appEmp, 'imgSigAppEmp');
+  }
+  if (response.appFlag2 == 1) {
+    loadSignature(response.appEmp2, 'imgSigAppEmp2');
+  }
+  if (response.countFlag == 1) {
+    loadSignature(response.countEmp, 'imgSigCountEmp');
+  }
+  if (response.authFlag == 1) {
+    loadSignature(response.authEmp, 'imgSigAuthEmp');
   }
 }
 $("#btnEditResubmit").click(function () {

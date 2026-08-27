@@ -46,6 +46,12 @@
         font-size: 9pt;
       }
 
+      .sig-img {
+        display: block;
+        max-height: 30px;
+        max-width: 90%;
+      }
+
       .title {
         text-align: center;
         font-weight: bold;
@@ -260,23 +266,49 @@
         <div class="signature-box">
             <table style="width: 100%;">
                 <tr>
-                    <td style="border: 0.2px solid #b0b7c0;" width="25%"> <br />
-                      <b>Requester Name:</b> <br />( @Model.PRHeader.empcode_txt ) <br />
+                    <td style="border: 0.2px solid #b0b7c0;" width="20%"> <br />
+                      <b>Requester Name:</b> <br />
+                      @if (!string.IsNullOrEmpty(Model.RequesterSignature))
+                      {
+                        <img src="data:image/png;base64,@Model.RequesterSignature" class="sig-img" />
+                      }
+                      ( @Model.PRHeader.empcode_txt ) <br />
                       Dept: @Model.PRHeader.reqDepCode <br />
                       Date: @Model.PRHeader.reqDate_txt
                     </td>
-                    <td style="border: 0.2px solid #b0b7c0;" width="25%">
+                    <td style="border: 0.2px solid #b0b7c0;" width="20%">
                       <b>Approved by:</b> <br />
+                      @if (!string.IsNullOrEmpty(Model.ApprovalSignature))
+                      {
+                        <img src="data:image/png;base64,@Model.ApprovalSignature" class="sig-img" />
+                      }
                       Name: @Model.PRHeader.appEmp_txt<br />
                       Date: @Model.PRHeader.appDate_txt
                     </td>
-                    <td style="border: 0.2px solid #b0b7c0;" width="25%">
+                    <td style="border: 0.2px solid #b0b7c0;" width="20%">
+                      <b>Approved by (2):</b> <br />
+                      @if (!string.IsNullOrEmpty(Model.Approval2Signature))
+                      {
+                        <img src="data:image/png;base64,@Model.Approval2Signature" class="sig-img" />
+                      }
+                      Name: @Model.PRHeader.appEmp2_txt<br />
+                      Date: @Model.PRHeader.appDate2_txt
+                    </td>
+                    <td style="border: 0.2px solid #b0b7c0;" width="20%">
                       <b>Countersigned by:</b> <br />
+                      @if (!string.IsNullOrEmpty(Model.CountersignSignature))
+                      {
+                        <img src="data:image/png;base64,@Model.CountersignSignature" class="sig-img" />
+                      }
                       Name: @Model.PRHeader.countEmp_txt<br />
                       Date: @Model.PRHeader.countDate_txt
                     </td>
-                    <td style="border: 0.2px solid #b0b7c0;" width="25%">
+                    <td style="border: 0.2px solid #b0b7c0;" width="20%">
                       <b>Authorized by</b> <br />
+                      @if (!string.IsNullOrEmpty(Model.AuthorizeSignature))
+                      {
+                        <img src="data:image/png;base64,@Model.AuthorizeSignature" class="sig-img" />
+                      }
                       Name: @Model.PRHeader.authEmp_txt<br />
                       Date: @Model.PRHeader.authDate_txt
                     </td>
